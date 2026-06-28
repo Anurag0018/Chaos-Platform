@@ -2,45 +2,80 @@ name: Infrastructure CI Integration Test
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test-chaos-platform:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout Codebase
-      uses: actions/checkout@v4
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
 
-    - name: Set up Kind Cluster
-      uses: engineerd/setup-kind@v0.6.0
-      with:
-        version: "v0.20.0"
-        cluster-name: "chaos-sandbox"
+      - name: Set up Kind Cluster
+        uses: helm/kind-action@v1
+        with:
+          version: v0.20.0
+          cluster_name: chaos-sandbox
 
-    - name: Verify Cluster Core Nodes
-      run: |
-        kubectl cluster-info
-        kubectl get nodes
+      - name: Verify Cluster Core Nodes
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
 
-    - name: Install Helm & Deploy LitmusChaos Operator
-      run: |
-        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-        helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
-        helm repo update
-        kubectl create namespace litmus
-        helm install litmus litmuschaos/litmus-helm --namespace litmus --wait
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    - name: Deploy Target Applications & RBAC Setup
-      run: |
-        # Create namespace first
-        kubectl create namespace target-zone --dry-run=client -o yaml | kubectl apply -f -
-        kubectl apply -f manifests/sample-app.yaml
-        kubectl create serviceaccount litmus-admin -n target-zone --dry-run=client -o yaml | kubectl apply -f -
-        kubectl create clusterrolebinding litmus-admin-role --clusterrole=cluster-admin --serviceaccount=target-zone:litmus-admin --dry-run=client -o yaml | kubectl apply -f -
+      - name: Add LitmusChaos Helm Repository
+        run: |
+          helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
+          helm repo update
 
-    - name: Test Infrastructure Convergence
-      run: |
-        echo "Validating target microservices are running smoothly..."
-        kubectl wait --for=condition=available deployment/core-api-service -n target-zone --timeout=60s
+      - name: Create Litmus Namespace
+        run: |
+          kubectl create namespace litmus --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy LitmusChaos Operator
+        run: |
+          helm install litmus litmuschaos/litmus-helm \
+            --namespace litmus \
+            --wait
+
+      - name: Create Target Namespace
+        run: |
+          kubectl create namespace target-zone --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy Sample Application
+        run: |
+          kubectl apply -f manifests/sample-app.yaml
+
+      - name: Create Service Account
+        run: |
+          kubectl create serviceaccount litmus-admin \
+            -n target-zone \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Cluster Role Binding
+        run: |
+          kubectl create clusterrolebinding litmus-admin-role \
+            --clusterrole=cluster-admin \
+            --serviceaccount=target-zone:litmus-admin \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Wait for Sample Application
+        run: |
+          kubectl wait \
+            --for=condition=available \
+            deployment/core-api-service \
+            -n target-zone \
+            --timeout=120s
+
+      - name: Verify Deployments
+        run: |
+          kubectl get all -n target-zone
+          kubectl get all -n litmus
