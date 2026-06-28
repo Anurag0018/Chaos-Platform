@@ -22,27 +22,29 @@ jobs:
           version: v0.20.0
           cluster_name: chaos-sandbox
 
-      - name: Verify Cluster Core Nodes
+      - name: Verify Kubernetes Cluster
         run: |
           kubectl cluster-info
           kubectl get nodes
 
       - name: Install Helm
         run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          helm version
 
       - name: Add LitmusChaos Helm Repository
         run: |
           helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
           helm repo update
+          helm search repo litmuschaos
 
       - name: Create Litmus Namespace
         run: |
           kubectl create namespace litmus --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy LitmusChaos Operator
+      - name: Install LitmusChaos
         run: |
-          helm install litmus litmuschaos/litmus-helm \
+          helm install chaos litmuschaos/litmus \
             --namespace litmus \
             --wait
 
@@ -60,22 +62,22 @@ jobs:
             -n target-zone \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Create Cluster Role Binding
+      - name: Create ClusterRoleBinding
         run: |
           kubectl create clusterrolebinding litmus-admin-role \
             --clusterrole=cluster-admin \
             --serviceaccount=target-zone:litmus-admin \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Wait for Sample Application
+      - name: Wait for Deployment
         run: |
           kubectl wait \
             --for=condition=available \
             deployment/core-api-service \
             -n target-zone \
-            --timeout=120s
+            --timeout=180s
 
-      - name: Verify Deployments
+      - name: Verify Resources
         run: |
           kubectl get all -n target-zone
           kubectl get all -n litmus
