@@ -70,9 +70,22 @@ export default function DashboardView({
     const isCompleted = status === 'Completed';
     const isFailed = status === 'Failed';
     const isRunning = status === 'Running';
+    const color = isCompleted ? '#10b981' : isFailed ? '#ef4444' : '#a78bfa';
 
     return (
       <Chip
+        icon={
+          <span
+            className="status-dot-pulse"
+            style={{
+              width: '6px',
+              height: '6px',
+              backgroundColor: color,
+              marginLeft: '8px',
+              marginRight: '-4px',
+            }}
+          />
+        }
         label={status}
         size="small"
         sx={{
@@ -81,11 +94,7 @@ export default function DashboardView({
             : isFailed
             ? 'rgba(239, 68, 68, 0.1)'
             : 'rgba(124, 58, 237, 0.1)',
-          color: isCompleted
-            ? '#10b981'
-            : isFailed
-            ? '#ef4444'
-            : '#a78bfa',
+          color: color,
           border: '1px solid',
           borderColor: isCompleted
             ? 'rgba(16, 185, 129, 0.2)'

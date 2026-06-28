@@ -269,25 +269,27 @@ export default function Sidebar({
         ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, border: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, border: 'none', bgcolor: '#141720' },
         }}
       >
         {drawerContent}
       </Drawer>
 
-      {/* Desktop drawer */}
-      <Drawer
-        variant="permanent"
+      {/* Desktop sidebar */}
+      <Box
         sx={{
           display: { xs: 'none', md: 'block' },
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, border: 'none' },
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          left: 0,
+          zIndex: 1000,
         }}
-        open
       >
         {drawerContent}
-      </Drawer>
+      </Box>
     </>
   );
 }

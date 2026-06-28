@@ -1,16 +1,41 @@
-# React + Vite
+# K8s Chaos Engineering Platform 🌀🔬
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An automated resiliency testing and chaos injection control plane for cloud-native applications. This platform provides engineers with a unified, dark-themed dashboard to systematically break Kubernetes microservices and evaluate their self-healing/high-availability capabilities in real time.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+- **🎯 Target Workspace Injection (`target-zone`):** Safely isolates targeted applications away from critical infrastructure.
+- **💀 Pod Delete Vector (`pod-delete`):** Simulates sudden infrastructure or node termination instances.
+- **🌐 Network Latency Testing (`pod-network-latency`):** Injects specific, localized packet delays to stress-test microservice timeouts and upstream resilience.
+- **⚡ CPU & Memory Resource Stress (`pod-cpu-hog` / `pod-memory-hog`):** Artificially spikes container compute footprint to validate HPA (Horizontal Pod Autoscaling) behaviors.
+- **📊 Live Auto-Recovery Reports:** Continuous background polling of Kubernetes Custom Resource Statuses (CRDs) paired with automated service health checks to yield instant resiliency verdicts.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** React.js, Material UI (MUI), TypeScript
+- **Backend Control Plane:** Python, FastAPI, Official Kubernetes SDK
+- **Chaos Engine:** LitmusChaos (Operator and Custom Resource Definitions)
+- **Environment:** Kubernetes (Minikube / Kind / Managed Cluster), Helm
+
+---
+
+## 📐 High-Level Architecture
+
+1. **Dashboard Layer (React + MUI):** User triggers specific experiment profiles and monitors system telemetry.
+2. **API Controller Layer (FastAPI):** Bridges frontend actions with the cluster, programmatically manipulating `ChaosEngine` Custom Objects via the K8s API.
+3. **Chaos Execution Layer (Litmus Operator):** Detects custom resource changes, spins up experiment pods, executes runtime faults inside target nodes, and outputs structured status metrics.
+
+---
+
+## 🚀 Quick Start & Deployment
+
+### 1. Set Up the Target Environment
+```bash
+# Create the targeted microservice zone
+kubectl apply -f manifests/sample-app.yaml

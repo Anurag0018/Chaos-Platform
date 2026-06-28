@@ -229,7 +229,6 @@ export default function App() {
           sx={{
             flexGrow: 1,
             p: { xs: 2, sm: 3, md: 4 },
-            width: { md: `calc(100% - 240px)` },
             minWidth: 0, // Prevent grid breakout
           }}
         >
