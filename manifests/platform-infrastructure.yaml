@@ -1,3 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: target-zone
+---
+# 1. RBAC Permissions for Chaos Backend Controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: chaos-backend-sa
+  namespace: target-zone
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: chaos-backend-role
+  namespace: target-zone
+rules:
+  - apiGroups: ["litmuschaos.io"]
+    resources: ["chaosengines", "chaosresults", "chaosexperiments"]
+    verbs: ["create", "get", "list", "watch", "delete", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods", "services", "namespaces"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: chaos-backend-rb
+  namespace: target-zone
+subjects:
+  - kind: ServiceAccount
+    name: chaos-backend-sa
+    namespace: target-zone
+roleRef:
+  kind: Role
+  name: chaos-backend-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# 2. Chaos Backend Deployment & Service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,12 +53,13 @@ spec:
       labels:
         app: chaos-backend
     spec:
+      serviceAccountName: chaos-backend-sa
       containers:
       - name: backend-api
         image: chaos-backend:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8000
+          - containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
@@ -26,13 +67,15 @@ metadata:
   name: chaos-backend-service
   namespace: target-zone
 spec:
-  type: ClusterIP
+  type: NodePort # CHANGED from ClusterIP
   selector:
     app: chaos-backend
   ports:
-  - port: 8000
-    targetPort: 8000
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30001 # MATCHES your kind-config FastAPI mapping
 ---
+# 3. Chaos Frontend Deployment & Service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -53,7 +96,7 @@ spec:
         image: chaos-frontend:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3000
+          - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
@@ -61,9 +104,10 @@ metadata:
   name: chaos-frontend-service
   namespace: target-zone
 spec:
-  type: ClusterIP
+  type: NodePort # CHANGED from ClusterIP
   selector:
     app: chaos-frontend
   ports:
-  - port: 3000
-    targetPort: 3000
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30000 # MATCHES your kind-config Vite mapping

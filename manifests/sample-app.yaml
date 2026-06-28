@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: target-zone
+  labels:
+    # Essential for Litmus Namespace scoping security
+    chaos: target 
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -11,7 +14,10 @@ metadata:
   labels:
     app: core-api-service
 spec:
-  replicas: 1
+  # CHANGED: Raised to 2 or 3 replicas. If you kill a single replica (1/1), 
+  # your auto-recovery report will instantly show complete outage downtime. 
+  # Multiple replicas let you observe true high-availability and recovery convergence.
+  replicas: 3 
   selector:
     matchLabels:
       app: core-api-service
@@ -27,7 +33,9 @@ spec:
         - containerPort: 80
         resources:
           limits:
-            cpu: "100m"
+            # OPTIMIZED: Litmus CPU stress hogs require a tiny bit of overhead clearance
+            # to keep the underlying container runtime system responsive during faults.
+            cpu: "200m"
             memory: "128Mi"
           requests:
             cpu: "50m"
@@ -41,8 +49,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 80
-    targetPort: 80
-    nodePort: 30000 # Matches the Kind config port mapping for the React Frontend simulation (for testing)
+    - port: 80
+      targetPort: 80
+      nodePort: 30010 # FIXED: Changed from 30000 to avoid colliding with your frontend dashboard!
   selector:
     app: core-api-service
