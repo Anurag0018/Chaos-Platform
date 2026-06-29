@@ -201,60 +201,6 @@ export default function Sidebar({
           <Divider sx={{ opacity: 0.1 }} />
           <MenuItem onClick={handleProfileClose} sx={{ fontSize: '0.9rem', color: '#ef4444' }}>Logout</MenuItem>
         </Menu>
-
-        {/* Cluster Switcher */}
-        <Box
-          onClick={handleClusterClick}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            py: 1,
-            px: 1.5,
-            borderRadius: 2,
-            bgcolor: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.04)',
-            cursor: 'pointer',
-            '&:hover': {
-              bgcolor: 'rgba(255, 255, 255, 0.05)',
-            },
-            transition: 'background-color 0.2s',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-            <CircleIcon sx={{ color: getStatusColor(clusterStatus), fontSize: 10 }} />
-            <Typography variant="body2" sx={{ fontWeight: 500, color: '#f3f4f6', fontSize: '0.85rem' }}>
-              Cluster: {currentCluster}
-            </Typography>
-          </Box>
-          <ArrowDownIcon sx={{ color: '#9ca3af', fontSize: 16 }} />
-        </Box>
-
-        <Menu
-          anchorEl={clusterAnchor}
-          open={Boolean(clusterAnchor)}
-          onClose={handleClusterClose}
-          PaperProps={{
-            sx: {
-              bgcolor: '#1e2230',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              width: 200,
-              mt: -1,
-            },
-          }}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <MenuItem onClick={() => handleSelectCluster('production')} sx={{ fontSize: '0.9rem' }}>
-            <CircleIcon sx={{ color: '#10b981', fontSize: 8, mr: 1.5 }} /> production
-          </MenuItem>
-          <MenuItem onClick={() => handleSelectCluster('staging')} sx={{ fontSize: '0.9rem' }}>
-            <CircleIcon sx={{ color: '#f97316', fontSize: 8, mr: 1.5 }} /> staging
-          </MenuItem>
-          <MenuItem onClick={() => handleSelectCluster('development')} sx={{ fontSize: '0.9rem' }}>
-            <CircleIcon sx={{ color: '#ef4444', fontSize: 8, mr: 1.5 }} /> development
-          </MenuItem>
-        </Menu>
       </Box>
     </Box>
   );

@@ -42,9 +42,31 @@ export default function App() {
   const [clusterStatus, setClusterStatus] = useState('Healthy');
   
   // Experiments list
-  const [experiments, setExperiments] = useState([]);
+  const [experiments, setExperiments] = useState(() => {
+    const list = [...initialExperiments];
+    for (let i = 9; i <= 24; i++) {
+      list.push({
+        id: String(i),
+        name: `filler-experiment-${i}`,
+        description: `Simulated chaos exercise number ${i}`,
+        type: i % 3 === 0 ? 'Pod Kill' : i % 3 === 1 ? 'Network Chaos' : 'CPU Stress',
+        namespace: i % 2 === 0 ? 'target-zone' : 'default',
+        target: i % 2 === 0 ? 'auth-db' : 'redis-cache',
+        status: 'Idle',
+        lastRun: 'Never',
+      });
+    }
+    return list;
+  });
+
   // Results list
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(() => {
+    return [
+      { runId: 'r1', name: 'pod-kill-webapp', type: 'Pod Kill', status: 'Completed', namespace: 'target-zone', target: 'web-app', startedAt: '2025-06-26 10:30:15', duration: '2m 34s', impact: 'Low' },
+      { runId: 'r2', name: 'network-latency', type: 'Network Chaos', status: 'Completed', namespace: 'target-zone', target: 'payment-svc', startedAt: '2025-06-26 10:29:42', duration: '5m 12s', impact: 'Medium' },
+      { runId: 'r3', name: 'cpu-stress-api', type: 'CPU Stress', status: 'Failed', namespace: 'target-zone', target: 'api-service', startedAt: '2025-06-26 10:10:31', duration: '1m 08s', impact: 'High' },
+    ];
+  });
 
   const [selectedRun, setSelectedRun] = useState(null);
   const [newExpDialogOpen, setNewExpDialogOpen] = useState(false);
@@ -241,9 +263,8 @@ export default function App() {
         <Box
           component="main"
           sx={{
-            flexGrow: 1,
+            flex: 1,
             p: { xs: 2, sm: 3, md: 4 },
-            width: { sm: 'calc(100% - 240px)' },
             minWidth: 0, // Prevent grid breakout
           }}
         >
