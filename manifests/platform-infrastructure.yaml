@@ -36,8 +36,9 @@ roleRef:
   kind: Role
   name: chaos-backend-role
   apiGroup: rbac.authorization.k8s.io
+
 ---
-# 2. Chaos Backend Deployment & Service
+# 2. Chaos Backend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -55,27 +56,30 @@ spec:
     spec:
       serviceAccountName: chaos-backend-sa
       containers:
-      - name: backend-api
-        image: chaos-backend:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-          - containerPort: 8000
+        - name: backend-api
+          image: asia-south1-docker.pkg.dev/chaos-platform/chaos-repo/chaos-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+
 ---
+# Backend Service
 apiVersion: v1
 kind: Service
 metadata:
   name: chaos-backend-service
   namespace: target-zone
 spec:
-  type: NodePort # CHANGED from ClusterIP
+  type: NodePort
   selector:
     app: chaos-backend
   ports:
     - port: 8000
       targetPort: 8000
-      nodePort: 30001 # MATCHES your kind-config FastAPI mapping
+      nodePort: 30001
+
 ---
-# 3. Chaos Frontend Deployment & Service
+# 3. Chaos Frontend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -92,22 +96,23 @@ spec:
         app: chaos-frontend
     spec:
       containers:
-      - name: frontend-ui
-        image: chaos-frontend:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-          - containerPort: 3000
+        - name: frontend-ui
+          image: asia-south1-docker.pkg.dev/chaos-platform/chaos-repo/chaos-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+
 ---
+# Frontend Service
 apiVersion: v1
 kind: Service
 metadata:
   name: chaos-frontend-service
   namespace: target-zone
 spec:
-  type: NodePort # CHANGED from ClusterIP
+  type: LoadBalancer
   selector:
     app: chaos-frontend
   ports:
-    - port: 3000
+    - port: 80
       targetPort: 3000
-      nodePort: 30000 # MATCHES your kind-config Vite mapping
