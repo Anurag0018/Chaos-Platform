@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -21,6 +21,53 @@ export default function NewExperimentDialog({ open, onClose, onCreateExperiment 
   const [type, setType] = useState('Pod Kill');
   const [namespace, setNamespace] = useState('target-zone');
   const [target, setTarget] = useState('web-app');
+  
+  const [namespacesList, setNamespacesList] = useState(['target-zone', 'default', 'kube-system', 'production-gate']);
+  const [targetsList, setTargetsList] = useState([]);
+
+  const API_BASE = 'http://localhost:8000/api';
+
+  // Fetch Namespaces from Kubernetes
+  useEffect(() => {
+    if (!open) return;
+    async function fetchNamespaces() {
+      try {
+        const res = await fetch(`${API_BASE}/kubernetes/namespaces`);
+        if (res.ok) {
+          const data = await res.json();
+          setNamespacesList(data);
+          if (data.length > 0 && !data.includes(namespace)) {
+            setNamespace(data[0]);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch namespaces from API, using defaults:", err);
+      }
+    }
+    fetchNamespaces();
+  }, [open]);
+
+  // Fetch Targets for selected Namespace from Kubernetes
+  useEffect(() => {
+    if (!open || !namespace) return;
+    async function fetchTargets() {
+      try {
+        const res = await fetch(`${API_BASE}/kubernetes/targets?namespace=${namespace}`);
+        if (res.ok) {
+          const data = await res.json();
+          setTargetsList(data);
+          if (data.length > 0) {
+            setTarget(data[0]);
+          } else {
+            setTarget('');
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch targets from API:", err);
+      }
+    }
+    fetchTargets();
+  }, [open, namespace]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,8 +97,6 @@ export default function NewExperimentDialog({ open, onClose, onCreateExperiment 
     { value: 'Memory Stress', label: 'Memory Stress (Stress Memory)' },
     { value: 'Pod Delete', label: 'Pod Delete (Delete Pods)' },
   ];
-
-  const namespaces = ['target-zone', 'default', 'kube-system', 'production-gate'];
 
   return (
     <Dialog
@@ -148,7 +193,7 @@ export default function NewExperimentDialog({ open, onClose, onCreateExperiment 
                   onChange={(e) => setNamespace(e.target.value)}
                   sx={{ bgcolor: 'rgba(255,255,255,0.01)' }}
                 >
-                  {namespaces.map((ns) => (
+                  {namespacesList.map((ns) => (
                     <MenuItem key={ns} value={ns}>
                       {ns}
                     </MenuItem>
@@ -159,21 +204,40 @@ export default function NewExperimentDialog({ open, onClose, onCreateExperiment 
 
             {/* Target Resource */}
             <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                label="Target Resource / Service"
-                value={target}
-                onChange={(e) => setTarget(e.target.value)}
-                placeholder="e.g. web-app or payment-svc"
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    bgcolor: 'rgba(255,255,255,0.01)',
-                  },
-                }}
-              />
+              {targetsList.length > 0 ? (
+                <FormControl fullWidth required>
+                  <InputLabel id="target-label">Target Resource / Service</InputLabel>
+                  <Select
+                    labelId="target-label"
+                    value={target}
+                    label="Target Resource / Service"
+                    onChange={(e) => setTarget(e.target.value)}
+                    sx={{ bgcolor: 'rgba(255,255,255,0.01)' }}
+                  >
+                    {targetsList.map((t) => (
+                      <MenuItem key={t} value={t}>
+                        {t}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  required
+                  fullWidth
+                  label="Target Resource / Service"
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value)}
+                  placeholder="e.g. web-app or payment-svc"
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: 'rgba(255,255,255,0.01)',
+                    },
+                  }}
+                />
+              )}
             </Grid>
           </Grid>
         </DialogContent>
