@@ -1,12 +1,35 @@
 import asyncio
 import datetime
+import os
 import random
 from typing import List, Optional
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from kubernetes import client, config
+from kubernetes.client.rest import ApiException
 
 app = FastAPI(title="Chaos Platform API")
+
+# Initialize Kubernetes Client
+# Try loading incluster config first (when running as a pod in k8s)
+# Fallback to loading kubeconfig file locally
+k8s_v1 = None
+try:
+    if os.getenv("KUBERNETES_SERVICE_HOST"):
+        config.load_incluster_config()
+        print("Loaded in-cluster Kubernetes config.")
+    else:
+        # Check root workspace path for kubeconfig
+        kubeconfig_path = "kubeconfig"
+        if not os.path.exists(kubeconfig_path) and os.path.exists("../kubeconfig"):
+            kubeconfig_path = "../kubeconfig"
+        config.load_kube_config(config_file=kubeconfig_path)
+        print(f"Loaded local Kubernetes config from {kubeconfig_path}.")
+    k8s_v1 = client.CoreV1Api()
+except Exception as e:
+    print(f"Warning: Failed to load Kubernetes configuration: {e}")
+    print("Running in MOCK mode (Kubernetes client disabled).")
 
 # Enable CORS for frontend requests
 app.add_middleware(
@@ -130,11 +153,51 @@ async def run_chaos_simulation(exp_id: str, run_id: str):
     rate = DB_SETTINGS["successRate"]
     auto_heal = DB_SETTINGS["autoHeal"]
 
+    # Find experiment details
+    exp_details = next((e for e in DB_EXPERIMENTS if e["id"] == exp_id), None)
+    exp_type = exp_details["type"] if exp_details else "Pod Kill"
+    namespace = exp_details["namespace"] if exp_details else "target-zone"
+    target = exp_details["target"] if exp_details else ""
+
     # 1. Wait duration
     await asyncio.sleep(speed)
 
-    # 2. Determine outcome
-    is_success = random.random() < rate
+    # 2. Determine outcome and perform actual action if connected to k8s
+    real_action_taken = False
+    
+    if k8s_v1 and exp_type in ["Pod Kill", "Pod Delete"] and target:
+        try:
+            # Fetch all pods in the target namespace
+            pods = k8s_v1.list_namespaced_pod(namespace=namespace)
+            matching_pods = []
+            for pod in pods.items:
+                app_label = pod.metadata.labels.get("app") if pod.metadata.labels else None
+                if app_label == target or target in pod.metadata.name:
+                    matching_pods.append(pod)
+            
+            if matching_pods:
+                target_pod = random.choice(matching_pods)
+                pod_name = target_pod.metadata.name
+                
+                # Delete pod immediately
+                k8s_v1.delete_namespaced_pod(
+                    name=pod_name,
+                    namespace=namespace,
+                    body=client.V1DeleteOptions(grace_period_seconds=0)
+                )
+                print(f"Chaos action: Successfully deleted pod {pod_name} in namespace {namespace}")
+                real_action_taken = True
+            else:
+                print(f"Chaos action warning: No pods found matching target {target} in namespace {namespace}")
+        except Exception as e:
+            print(f"Chaos action error: Failed to execute real pod deletion: {e}")
+
+    # Determine final outcome
+    if real_action_taken:
+        is_success = True
+    else:
+        is_success = random.random() < rate
+        
     final_status = "Completed" if is_success else "Failed"
     
     duration_min = random.randint(0, 1)
@@ -169,7 +232,8 @@ async def run_chaos_simulation(exp_id: str, run_id: str):
         await asyncio.sleep(3)
         DB_CLUSTER["status"] = "Healthy"
     elif is_success and auto_heal:
-        # Return to healthy if it was degraded
+        # If a real pod was killed, let the cluster health be updated dynamically via API query,
+        # but keep in-memory mock state healthy for mock fallback.
         DB_CLUSTER["status"] = "Healthy"
 
 # API Endpoints
@@ -232,7 +296,34 @@ def get_results():
 
 @app.get("/api/cluster/health")
 def get_cluster_health():
-    return {"status": DB_CLUSTER["status"]}
+    if not k8s_v1:
+        return {"status": DB_CLUSTER["status"]}
+    
+    try:
+        # Query target-zone namespace pods
+        namespace = "target-zone"
+        pods = k8s_v1.list_namespaced_pod(namespace=namespace)
+        
+        if not pods.items:
+            # If namespace has no pods, consider it degraded (initializing)
+            return {"status": "Degraded"}
+            
+        for pod in pods.items:
+            # If any pod is not running
+            if pod.status.phase != "Running":
+                return {"status": "Degraded"}
+                
+            # If container statuses are present, check readiness
+            if pod.status.container_statuses:
+                for status in pod.status.container_statuses:
+                    if not status.ready:
+                        return {"status": "Degraded"}
+                        
+        return {"status": "Healthy"}
+    except Exception as e:
+        print(f"Kubernetes cluster health check error: {e}")
+        # Fallback to mock DB status in case of API/auth failure
+        return {"status": DB_CLUSTER["status"]}
 
 @app.post("/api/cluster/health/{status}")
 def override_cluster_health(status: str):
@@ -240,6 +331,57 @@ def override_cluster_health(status: str):
         raise HTTPException(status_code=400, detail="Invalid status")
     DB_CLUSTER["status"] = status
     return {"status": DB_CLUSTER["status"]}
+
+@app.get("/api/kubernetes/namespaces", response_model=List[str])
+def get_kubernetes_namespaces():
+    if not k8s_v1:
+        # Fallback list of mock namespaces
+        return ["target-zone", "default", "kube-system", "production-gate"]
+    try:
+        ns_list = k8s_v1.list_namespace()
+        namespaces = [ns.metadata.name for ns in ns_list.items]
+        return namespaces
+    except Exception as e:
+        print(f"Error listing namespaces: {e}")
+        return ["target-zone", "default", "kube-system", "production-gate"]
+
+@app.get("/api/kubernetes/targets", response_model=List[str])
+def get_kubernetes_targets(namespace: str = "target-zone"):
+    if not k8s_v1:
+        # Fallback list of mock targets
+        if namespace == "target-zone":
+            return ["web-app", "payment-svc", "api-service", "order-service", "db-service"]
+        elif namespace == "kube-system":
+            return ["fluentd", "kube-dns", "kube-proxy"]
+        else:
+            return ["frontend", "api-gateway", "auth-db", "redis-cache"]
+            
+    try:
+        # Query services and deployments in the namespace
+        targets = set()
+        
+        # 1. Fetch deployments
+        apps_v1 = client.AppsV1Api()
+        depl_list = apps_v1.list_namespaced_deployment(namespace=namespace)
+        for depl in depl_list.items:
+            targets.add(depl.metadata.name)
+            
+        # 2. Fetch services
+        svc_list = k8s_v1.list_namespaced_service(namespace=namespace)
+        for svc in svc_list.items:
+            targets.add(svc.metadata.name)
+            
+        # 3. Fetch pods (for app labels)
+        pod_list = k8s_v1.list_namespaced_pod(namespace=namespace)
+        for pod in pod_list.items:
+            app_label = pod.metadata.labels.get("app") if pod.metadata.labels else None
+            if app_label:
+                targets.add(app_label)
+                
+        return sorted(list(targets))
+    except Exception as e:
+        print(f"Error listing targets for namespace {namespace}: {e}")
+        return ["web-app", "payment-svc", "api-service", "order-service", "db-service"]
 
 @app.get("/api/settings", response_model=Settings)
 def get_settings():
