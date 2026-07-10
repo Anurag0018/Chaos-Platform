@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Grid,
@@ -14,17 +13,12 @@ import {
   Button,
   Chip,
   Paper,
-  LinearProgress,
-  Menu,
-  MenuItem,
 } from '@mui/material';
 import {
   LocalFireDepartment as FireIcon,
-  Circle as CircleIcon,
   CheckCircle as SuccessIcon,
   Cancel as FailedIcon,
   Explore as CompassIcon,
-  KeyboardArrowDown as ArrowDownIcon,
 } from '@mui/icons-material';
 
 // Custom high-fidelity SVGs matching the mockup exactly

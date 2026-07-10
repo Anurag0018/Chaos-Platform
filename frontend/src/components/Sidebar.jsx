@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Drawer,
   List,
   ListItem,
   ListItemButton,
@@ -20,7 +19,6 @@ import {
   Settings as SettingsIcon,
   FlashOn as LogoIcon,
   KeyboardArrowDown as ArrowDownIcon,
-  Circle as CircleIcon,
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
@@ -28,14 +26,8 @@ const drawerWidth = 240;
 export default function Sidebar({
   selectedView,
   setSelectedView,
-  currentCluster,
-  setCurrentCluster,
-  clusterStatus,
-  mobileOpen,
-  handleDrawerToggle,
 }) {
   const [profileAnchor, setProfileAnchor] = React.useState(null);
-  const [clusterAnchor, setClusterAnchor] = React.useState(null);
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, value: 'dashboard' },
@@ -46,25 +38,6 @@ export default function Sidebar({
 
   const handleProfileClick = (event) => setProfileAnchor(event.currentTarget);
   const handleProfileClose = () => setProfileAnchor(null);
-
-  const handleClusterClick = (event) => setClusterAnchor(event.currentTarget);
-  const handleClusterClose = () => setClusterAnchor(null);
-
-  const handleSelectCluster = (cluster) => {
-    setCurrentCluster(cluster);
-    handleClusterClose();
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Healthy':
-        return '#10b981';
-      case 'Degraded':
-        return '#f97316';
-      default:
-        return '#ef4444';
-    }
-  };
 
   const drawerContent = (
     <Box
@@ -96,7 +69,6 @@ export default function Sidebar({
                 <ListItemButton
                   onClick={() => {
                     setSelectedView(item.value);
-                    if (mobileOpen) handleDrawerToggle();
                   }}
                   sx={{
                     borderRadius: 1.5,

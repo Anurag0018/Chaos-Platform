@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { Box, CssBaseline, useMediaQuery, IconButton, AppBar, Toolbar, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Box, CssBaseline } from '@mui/material';
 import theme from './theme';
 import Sidebar from './components/Sidebar';
 import DashboardView from './components/DashboardView';
