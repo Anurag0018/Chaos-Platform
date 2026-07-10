@@ -206,36 +206,18 @@ export default function Sidebar({
   );
 
   return (
-    <>
-      {/* Mobile drawer */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, border: 'none', bgcolor: '#141720' },
-        }}
-      >
-        {drawerContent}
-      </Drawer>
-
-      {/* Desktop sidebar */}
-      <Box
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          width: drawerWidth,
-          flexShrink: 0,
-          height: '100vh',
-          position: 'sticky',
-          top: 0,
-          left: 0,
-          zIndex: 1000,
-        }}
-      >
-        {drawerContent}
-      </Box>
-    </>
+    <Box
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
+        left: 0,
+        zIndex: 1000,
+      }}
+    >
+      {drawerContent}
+    </Box>
   );
 }

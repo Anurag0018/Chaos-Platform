@@ -43,20 +43,11 @@ const WaveIconSVG = ({ color, size = 32, ...props }) => (
 export default function DashboardView({
   experiments,
   results,
-  currentCluster,
-  setCurrentCluster,
   clusterStatus,
   onRunExperiment,
   setView,
   setSelectedExperimentForLogs,
 }) {
-  const [clusterAnchor, setClusterAnchor] = React.useState(null);
-  const handleClusterClick = (event) => setClusterAnchor(event.currentTarget);
-  const handleClusterClose = () => setClusterAnchor(null);
-  const handleSelectCluster = (cluster) => {
-    setCurrentCluster(cluster);
-    handleClusterClose();
-  };
   // Count stats
   const totalRuns = results.length;
   const successfulRuns = results.filter((r) => r.status === 'Completed').length;
@@ -166,65 +157,10 @@ export default function DashboardView({
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
       {/* View Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0 }}>
-            Dashboard
-          </Typography>
-        </Box>
-
-        {/* Cluster Selector Dropdown Setting */}
-        <Box>
-          <Button
-            onClick={handleClusterClick}
-            endIcon={<ArrowDownIcon />}
-            sx={{
-              bgcolor: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              color: '#f3f4f6',
-              px: 2,
-              py: 0.8,
-              borderRadius: 2,
-              textTransform: 'none',
-              fontWeight: 600,
-              fontSize: '0.85rem',
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-              },
-            }}
-          >
-            <CircleIcon sx={{ color: clusterStatus === 'Healthy' ? '#10b981' : clusterStatus === 'Degraded' ? '#f97316' : '#ef4444', fontSize: 8, mr: 1 }} />
-            Cluster: {currentCluster}
-          </Button>
-
-          <Menu
-            anchorEl={clusterAnchor}
-            open={Boolean(clusterAnchor)}
-            onClose={handleClusterClose}
-            PaperProps={{
-              sx: {
-                bgcolor: '#161920',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                width: 160,
-                mt: 0.5,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              },
-            }}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          >
-            <MenuItem onClick={() => handleSelectCluster('production')} sx={{ fontSize: '0.85rem', color: '#fff', py: 1 }}>
-              <CircleIcon sx={{ color: '#10b981', fontSize: 6, mr: 1.5 }} /> production
-            </MenuItem>
-            <MenuItem onClick={() => handleSelectCluster('staging')} sx={{ fontSize: '0.85rem', color: '#fff', py: 1 }}>
-              <CircleIcon sx={{ color: '#f97316', fontSize: 6, mr: 1.5 }} /> staging
-            </MenuItem>
-            <MenuItem onClick={() => handleSelectCluster('development')} sx={{ fontSize: '0.85rem', color: '#fff', py: 1 }}>
-              <CircleIcon sx={{ color: '#ef4444', fontSize: 6, mr: 1.5 }} /> development
-            </MenuItem>
-          </Menu>
-        </Box>
+      <Box>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0 }}>
+          Dashboard
+        </Typography>
       </Box>
 
       {/* Top Cards Grid */}

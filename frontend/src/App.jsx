@@ -44,7 +44,6 @@ export default function App() {
 
   const [selectedRun, setSelectedRun] = useState(null);
   const [newExpDialogOpen, setNewExpDialogOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Simulation settings
   const [settings, setSettings] = useState({
@@ -81,9 +80,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+
 
   const handleCreateExperiment = async (newExp) => {
     // Generate optimistic UI update
@@ -215,22 +212,18 @@ export default function App() {
     }
   };
 
-  const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#0d0e12', width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
         
-        {/* Sidebar Responsive Component */}
+        {/* Sidebar Component */}
         <Sidebar
           selectedView={selectedView}
           setSelectedView={setSelectedView}
           currentCluster={currentCluster}
           setCurrentCluster={setCurrentCluster}
           clusterStatus={clusterStatus}
-          mobileOpen={mobileOpen}
-          handleDrawerToggle={handleDrawerToggle}
         />
 
         {/* Main Content Pane */}
@@ -242,33 +235,11 @@ export default function App() {
             minWidth: 0, // Prevent grid breakout
           }}
         >
-          {/* Mobile Top Bar (AppBar visible only on small viewports) */}
-          {!isSmUp && (
-            <AppBar position="sticky" sx={{ bgcolor: '#141721', backgroundImage: 'none', mb: 3, borderRadius: 2 }}>
-              <Toolbar>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  edge="start"
-                  onClick={handleDrawerToggle}
-                  sx={{ mr: 2 }}
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Typography variant="subtitle1" noWrap component="div" sx={{ fontWeight: 700 }}>
-                  Chaos Platform Dashboard
-                </Typography>
-              </Toolbar>
-            </AppBar>
-          )}
-
           {/* Dynamic View Selector */}
           {selectedView === 'dashboard' && (
             <DashboardView
               experiments={experiments}
               results={results}
-              currentCluster={currentCluster}
-              setCurrentCluster={setCurrentCluster}
               clusterStatus={clusterStatus}
               onRunExperiment={handleRunExperiment}
               setView={setSelectedView}
