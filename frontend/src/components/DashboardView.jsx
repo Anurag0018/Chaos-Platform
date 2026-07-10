@@ -152,11 +152,8 @@ export default function DashboardView({
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
       {/* View Header */}
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 1 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0 }}>
           Dashboard
-        </Typography>
-        <Typography variant="body2" sx={{ color: '#9ca3af' }}>
-          Overview of chaos engineering activities and infrastructure resilience.
         </Typography>
       </Box>
 

@@ -96,60 +96,22 @@ DB_CLUSTER = {
 
 # Initial Experiments
 DB_EXPERIMENTS = [
-    {"id": "1", "name": "pod-kill-webapp", "description": "Kill Random Pods", "type": "Pod Kill", "namespace": "target-zone", "target": "web-app", "status": "Completed", "lastRun": "2025-06-26 10:30:15"},
-    {"id": "2", "name": "network-latency", "description": "Inject Latency", "type": "Network Chaos", "namespace": "target-zone", "target": "payment-svc", "status": "Completed", "lastRun": "2025-06-26 10:29:42"},
-    {"id": "3", "name": "cpu-stress-api", "description": "Stress CPU", "type": "CPU Stress", "namespace": "target-zone", "target": "api-service", "status": "Failed", "lastRun": "2025-06-26 10:10:31"},
-    {"id": "4", "name": "memory-stress", "description": "Stress Memory", "type": "Memory Stress", "namespace": "target-zone", "target": "order-service", "status": "Completed", "lastRun": "2025-06-26 09:45:12"},
-    {"id": "5", "name": "pod-delete", "description": "Delete Pods", "type": "Pod Delete", "namespace": "default", "target": "frontend", "status": "Completed", "lastRun": "2025-06-26 09:20:05"},
-    {"id": "6", "name": "packet-loss-db", "description": "Inject Network Packet Loss", "type": "Network Chaos", "namespace": "target-zone", "target": "db-service", "status": "Idle", "lastRun": "Never"},
-    {"id": "7", "name": "disk-fill-logs", "description": "Fill up ephemeral storage", "type": "Memory Stress", "namespace": "kube-system", "target": "fluentd", "status": "Idle", "lastRun": "Never"},
-    {"id": "8", "name": "api-delay-gateway", "description": "Inject 500ms API gateway lag", "type": "Network Chaos", "namespace": "default", "target": "api-gateway", "status": "Idle", "lastRun": "Never"},
+    {"id": "1", "name": "Pod Kill", "description": "Kill Random Pods", "type": "Pod Kill", "namespace": "target-zone", "target": "web-app", "status": "Completed", "lastRun": "2025-06-26 10:30:15"},
+    {"id": "2", "name": "Network Latency", "description": "Inject Latency", "type": "Network Chaos", "namespace": "target-zone", "target": "payment-svc", "status": "Completed", "lastRun": "2025-06-26 10:29:42"},
+    {"id": "3", "name": "CPU Stress", "description": "Stress CPU", "type": "CPU Stress", "namespace": "target-zone", "target": "api-service", "status": "Failed", "lastRun": "2025-06-26 10:10:31"},
+    {"id": "4", "name": "Memory Stress", "description": "Stress Memory", "type": "Memory Stress", "namespace": "target-zone", "target": "order-service", "status": "Completed", "lastRun": "2025-06-26 09:45:12"},
+    {"id": "5", "name": "Pod Delete", "description": "Delete Pods", "type": "Pod Delete", "namespace": "default", "target": "frontend", "status": "Completed", "lastRun": "2025-06-26 09:20:05"},
+    {"id": "6", "name": "Packet Loss DB", "description": "Inject Network Packet Loss", "type": "Network Chaos", "namespace": "target-zone", "target": "db-service", "status": "Idle", "lastRun": "Never"},
+    {"id": "7", "name": "Disk Fill Logs", "description": "Fill up ephemeral storage", "type": "Memory Stress", "namespace": "kube-system", "target": "fluentd", "status": "Idle", "lastRun": "Never"},
+    {"id": "8", "name": "API Delay Gateway", "description": "Inject 500ms API gateway lag", "type": "Network Chaos", "namespace": "default", "target": "api-gateway", "status": "Idle", "lastRun": "Never"},
 ]
 
-# Generate filler experiments to make it 24
-for i in range(9, 25):
-    DB_EXPERIMENTS.append({
-        "id": str(i),
-        "name": f"filler-experiment-{i}",
-        "description": f"Simulated chaos exercise number {i}",
-        "type": "Pod Kill" if i % 3 == 0 else "Network Chaos" if i % 3 == 1 else "CPU Stress",
-        "namespace": "target-zone" if i % 2 == 0 else "default",
-        "target": "auth-db" if i % 2 == 0 else "redis-cache",
-        "status": "Idle",
-        "lastRun": "Never",
-    })
-
-# Initial Results
+# Initial Results matching the target mockup exactly (3 total runs)
 DB_RESULTS = [
-    {"runId": "r1", "name": "pod-kill-webapp", "type": "Pod Kill", "status": "Completed", "namespace": "target-zone", "target": "web-app", "startedAt": "2025-06-26 10:30:15", "duration": "2m 34s", "impact": "Low"},
-    {"runId": "r2", "name": "network-latency", "type": "Network Chaos", "status": "Completed", "namespace": "target-zone", "target": "payment-svc", "startedAt": "2025-06-26 10:29:42", "duration": "5m 12s", "impact": "Medium"},
-    {"runId": "r3", "name": "cpu-stress-api", "type": "CPU Stress", "status": "Failed", "namespace": "target-zone", "target": "api-service", "startedAt": "2025-06-26 10:10:31", "duration": "1m 08s", "impact": "High"},
-    {"runId": "r4", "name": "memory-stress", "type": "Memory Stress", "status": "Completed", "namespace": "target-zone", "target": "order-service", "startedAt": "2025-06-26 09:45:12", "duration": "3m 45s", "impact": "Medium"},
-    {"runId": "r5", "name": "pod-delete", "type": "Pod Delete", "status": "Completed", "namespace": "default", "target": "frontend", "startedAt": "2025-06-26 09:20:05", "duration": "1m 56s", "impact": "Low"},
-    {"runId": "r6", "name": "network-latency", "type": "Network Chaos", "status": "Completed", "namespace": "target-zone", "target": "payment-svc", "startedAt": "2025-06-25 15:20:10", "duration": "5m 00s", "impact": "Low"},
-    {"runId": "r7", "name": "pod-kill-webapp", "type": "Pod Kill", "status": "Failed", "namespace": "target-zone", "target": "web-app", "startedAt": "2025-06-25 14:15:33", "duration": "45s", "impact": "High"},
-    {"runId": "r8", "name": "cpu-stress-api", "type": "CPU Stress", "status": "Completed", "namespace": "target-zone", "target": "api-service", "startedAt": "2025-06-25 11:05:00", "duration": "2m 10s", "impact": "Low"},
+    {"runId": "r1", "name": "Pod Kill", "type": "Pod Kill", "status": "Completed", "namespace": "target-zone", "target": "web-app", "startedAt": "2025-06-26 10:30:15", "duration": "2m 34s", "impact": "Low"},
+    {"runId": "r2", "name": "Network Latency", "type": "Network Chaos", "status": "Completed", "namespace": "target-zone", "target": "payment-svc", "startedAt": "2025-06-26 10:29:42", "duration": "5m 12s", "impact": "Medium"},
+    {"runId": "r3", "name": "CPU Stress", "type": "CPU Stress", "status": "Failed", "namespace": "target-zone", "target": "api-service", "startedAt": "2025-06-26 10:10:31", "duration": "1m 08s", "impact": "High"},
 ]
-
-# Generate filler results to make it 48
-types = ['Pod Kill', 'Network Chaos', 'CPU Stress', 'Memory Stress', 'Pod Delete']
-impacts = ['Low', 'Medium', 'High']
-statuses = ['Completed', 'Completed', 'Completed', 'Failed']
-
-for i in range(9, 49):
-    date = datetime.datetime.now() - datetime.timedelta(days=i // 3, hours=i % 24)
-    date_str = date.strftime("%Y-%m-%d %H:%M:%S")
-    DB_RESULTS.append({
-        "runId": f"r{i}",
-        "name": "pod-kill-webapp" if i % 4 == 0 else "network-latency" if i % 4 == 1 else "cpu-stress-api" if i % 4 == 2 else "memory-stress",
-        "type": types[i % len(types)],
-        "status": statuses[i % len(statuses)],
-        "namespace": "target-zone" if i % 3 == 0 else "default" if i % 3 == 1 else "kube-system",
-        "target": "web-app" if i % 3 == 0 else "payment-svc" if i % 3 == 1 else "order-service",
-        "startedAt": date_str,
-        "duration": f"{random.randint(1, 5)}m {random.randint(10, 59)}s",
-        "impact": impacts[i % len(impacts)],
-    })
 
 # Simulation Runner task
 async def run_chaos_simulation(exp_id: str, run_id: str):

@@ -12,26 +12,21 @@ import NewExperimentDialog from './components/NewExperimentDialog';
 
 // Mock Initial Experiments
 const initialExperiments = [
-  { id: '1', name: 'pod-kill-webapp', description: 'Kill Random Pods', type: 'Pod Kill', namespace: 'target-zone', target: 'web-app', status: 'Completed', lastRun: '2025-06-26 10:30:15' },
-  { id: '2', name: 'network-latency', description: 'Inject Latency', type: 'Network Chaos', namespace: 'target-zone', target: 'payment-svc', status: 'Completed', lastRun: '2025-06-26 10:29:42' },
-  { id: '3', name: 'cpu-stress-api', description: 'Stress CPU', type: 'CPU Stress', namespace: 'target-zone', target: 'api-service', status: 'Failed', lastRun: '2025-06-26 10:10:31' },
-  { id: '4', name: 'memory-stress', description: 'Stress Memory', type: 'Memory Stress', namespace: 'target-zone', target: 'order-service', status: 'Completed', lastRun: '2025-06-26 09:45:12' },
-  { id: '5', name: 'pod-delete', description: 'Delete Pods', type: 'Pod Delete', namespace: 'default', target: 'frontend', status: 'Completed', lastRun: '2025-06-26 09:20:05' },
-  { id: '6', name: 'packet-loss-db', description: 'Inject Network Packet Loss', type: 'Network Chaos', namespace: 'target-zone', target: 'db-service', status: 'Idle', lastRun: 'Never' },
-  { id: '7', name: 'disk-fill-logs', description: 'Fill up ephemeral storage', type: 'Memory Stress', namespace: 'kube-system', target: 'fluentd', status: 'Idle', lastRun: 'Never' },
-  { id: '8', name: 'api-delay-gateway', description: 'Inject 500ms API gateway lag', type: 'Network Chaos', namespace: 'default', target: 'api-gateway', status: 'Idle', lastRun: 'Never' },
+  { id: '1', name: 'Pod Kill', description: 'Kill Random Pods', type: 'Pod Kill', namespace: 'target-zone', target: 'web-app', status: 'Completed', lastRun: '2025-06-26 10:30:15' },
+  { id: '2', name: 'Network Latency', description: 'Inject Latency', type: 'Network Chaos', namespace: 'target-zone', target: 'payment-svc', status: 'Completed', lastRun: '2025-06-26 10:29:42' },
+  { id: '3', name: 'CPU Stress', description: 'Stress CPU', type: 'CPU Stress', namespace: 'target-zone', target: 'api-service', status: 'Failed', lastRun: '2025-06-26 10:10:31' },
+  { id: '4', name: 'Memory Stress', description: 'Stress Memory', type: 'Memory Stress', namespace: 'target-zone', target: 'order-service', status: 'Completed', lastRun: '2025-06-26 09:45:12' },
+  { id: '5', name: 'Pod Delete', description: 'Delete Pods', type: 'Pod Delete', namespace: 'default', target: 'frontend', status: 'Completed', lastRun: '2025-06-26 09:20:05' },
+  { id: '6', name: 'Packet Loss DB', description: 'Inject Network Packet Loss', type: 'Network Chaos', namespace: 'target-zone', target: 'db-service', status: 'Idle', lastRun: 'Never' },
+  { id: '7', name: 'Disk Fill Logs', description: 'Fill up ephemeral storage', type: 'Memory Stress', namespace: 'kube-system', target: 'fluentd', status: 'Idle', lastRun: 'Never' },
+  { id: '8', name: 'API Delay Gateway', description: 'Inject 500ms API gateway lag', type: 'Network Chaos', namespace: 'default', target: 'api-gateway', status: 'Idle', lastRun: 'Never' },
 ];
 
-// Mock Initial Results
+// Mock Initial Results (matching mockup exactly)
 const initialResults = [
-  { runId: 'r1', name: 'pod-kill-webapp', type: 'Pod Kill', status: 'Completed', namespace: 'target-zone', target: 'web-app', startedAt: '2025-06-26 10:30:15', duration: '2m 34s', impact: 'Low' },
-  { runId: 'r2', name: 'network-latency', type: 'Network Chaos', status: 'Completed', namespace: 'target-zone', target: 'payment-svc', startedAt: '2025-06-26 10:29:42', duration: '5m 12s', impact: 'Medium' },
-  { runId: 'r3', name: 'cpu-stress-api', type: 'CPU Stress', status: 'Failed', namespace: 'target-zone', target: 'api-service', startedAt: '2025-06-26 10:10:31', duration: '1m 08s', impact: 'High' },
-  { runId: 'r4', name: 'memory-stress', type: 'Memory Stress', status: 'Completed', namespace: 'target-zone', target: 'order-service', startedAt: '2025-06-26 09:45:12', duration: '3m 45s', impact: 'Medium' },
-  { runId: 'r5', name: 'pod-delete', type: 'Pod Delete', status: 'Completed', namespace: 'default', target: 'frontend', startedAt: '2025-06-26 09:20:05', duration: '1m 56s', impact: 'Low' },
-  { runId: 'r6', name: 'network-latency', type: 'Network Chaos', status: 'Completed', namespace: 'target-zone', target: 'payment-svc', startedAt: '2025-06-25 15:20:10', duration: '5m 00s', impact: 'Low' },
-  { runId: 'r7', name: 'pod-kill-webapp', type: 'Pod Kill', status: 'Failed', namespace: 'target-zone', target: 'web-app', startedAt: '2025-06-25 14:15:33', duration: '45s', impact: 'High' },
-  { runId: 'r8', name: 'cpu-stress-api', type: 'CPU Stress', status: 'Completed', namespace: 'target-zone', target: 'api-service', startedAt: '2025-06-25 11:05:00', duration: '2m 10s', impact: 'Low' },
+  { runId: 'r1', name: 'Pod Kill', type: 'Pod Kill', status: 'Completed', namespace: 'target-zone', target: 'web-app', startedAt: '2025-06-26 10:30:15', duration: '2m 34s', impact: 'Low' },
+  { runId: 'r2', name: 'Network Latency', type: 'Network Chaos', status: 'Completed', namespace: 'target-zone', target: 'payment-svc', startedAt: '2025-06-26 10:29:42', duration: '5m 12s', impact: 'Medium' },
+  { runId: 'r3', name: 'CPU Stress', type: 'CPU Stress', status: 'Failed', namespace: 'target-zone', target: 'api-service', startedAt: '2025-06-26 10:10:31', duration: '1m 08s', impact: 'High' },
 ];
 
 const API_BASE = '/api';
@@ -42,22 +37,7 @@ export default function App() {
   const [clusterStatus, setClusterStatus] = useState('Healthy');
   
   // Experiments list
-  const [experiments, setExperiments] = useState(() => {
-    const list = [...initialExperiments];
-    for (let i = 9; i <= 24; i++) {
-      list.push({
-        id: String(i),
-        name: `filler-experiment-${i}`,
-        description: `Simulated chaos exercise number ${i}`,
-        type: i % 3 === 0 ? 'Pod Kill' : i % 3 === 1 ? 'Network Chaos' : 'CPU Stress',
-        namespace: i % 2 === 0 ? 'target-zone' : 'default',
-        target: i % 2 === 0 ? 'auth-db' : 'redis-cache',
-        status: 'Idle',
-        lastRun: 'Never',
-      });
-    }
-    return list;
-  });
+  const [experiments, setExperiments] = useState(() => [...initialExperiments]);
 
   // Results list
   const [results, setResults] = useState(() => [...initialResults]);
