@@ -6,8 +6,13 @@ from typing import List, Optional
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from kubernetes import client, config
-from kubernetes.client.rest import ApiException
+try:
+    from kubernetes import client, config  # type: ignore
+    from kubernetes.client.exceptions import ApiException  # type: ignore
+except ImportError:
+    client = None
+    config = None
+    ApiException = None
 
 app = FastAPI(title="Chaos Platform API")
 
