@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Card,
@@ -28,9 +28,9 @@ export default function SettingsView({
   settings,
   setSettings,
 }) {
-  const [successRate, setSuccessRate] = useState(settings.successRate * 100);
-  const [simulationSpeed, setSimulationSpeed] = useState(settings.simulationSpeed);
-  const [autoHeal, setAutoHeal] = useState(settings.autoHeal);
+  const [successRate, setSuccessRate] = useState((settings?.successRate ?? 0.8) * 100);
+  const [simulationSpeed, setSimulationSpeed] = useState(settings?.simulationSpeed ?? 3);
+  const [autoHeal, setAutoHeal] = useState(settings?.autoHeal ?? true);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [newNamespace, setNewNamespace] = useState('');
   const [namespaces, setNamespaces] = useState(['target-zone', 'default', 'kube-system', 'production-gate']);

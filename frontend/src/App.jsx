@@ -179,12 +179,12 @@ export default function App() {
           )
         );
 
-        if (settings.autoHeal) {
+        if (settings?.autoHeal) {
           setTimeout(() => setClusterStatus('Healthy'), 3000);
         } else if (!isSuccess) {
           setClusterStatus('Critical');
         }
-      }, settings.simulationSpeed * 1000);
+      }, (settings?.simulationSpeed ?? 3) * 1000);
     }
   };
 

@@ -317,44 +317,44 @@ export default function DashboardView({
                   Summary
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.15)', display: 'flex' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flexShrink: 1 }}>
+                      <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.15)', display: 'flex', flexShrink: 0 }}>
                         <CompassIcon sx={{ color: '#3b82f6', fontSize: 20 }} />
                       </Box>
-                      <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500 }}>
+                      <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500, noWrap: false }}>
                         Total Experiments
                       </Typography>
                     </Box>
-                    <Typography variant="h5" sx={{ color: '#fff', fontWeight: 700 }}>
+                    <Typography variant="h5" sx={{ color: '#fff', fontWeight: 700, flexShrink: 0 }}>
                       {totalRuns}
                     </Typography>
                   </Box>
 
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.15)', display: 'flex' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flexShrink: 1 }}>
+                      <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.15)', display: 'flex', flexShrink: 0 }}>
                         <SuccessIcon sx={{ color: '#10b981', fontSize: 20 }} />
                       </Box>
-                      <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500 }}>
+                      <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500, noWrap: false }}>
                         Successful
                       </Typography>
                     </Box>
-                    <Typography variant="h5" sx={{ color: '#10b981', fontWeight: 700 }}>
+                    <Typography variant="h5" sx={{ color: '#10b981', fontWeight: 700, flexShrink: 0 }}>
                       {successfulRuns}
                     </Typography>
                   </Box>
 
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ bgcolor: 'rgba(239, 68, 68, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.15)', display: 'flex' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flexShrink: 1 }}>
+                      <Box sx={{ bgcolor: 'rgba(239, 68, 68, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.15)', display: 'flex', flexShrink: 0 }}>
                         <FailedIcon sx={{ color: '#ef4444', fontSize: 20 }} />
                       </Box>
-                      <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500 }}>
+                      <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500, noWrap: false }}>
                         Failed
                       </Typography>
                     </Box>
-                    <Typography variant="h5" sx={{ color: '#ef4444', fontWeight: 700 }}>
+                    <Typography variant="h5" sx={{ color: '#ef4444', fontWeight: 700, flexShrink: 0 }}>
                       {failedRuns}
                     </Typography>
                   </Box>
