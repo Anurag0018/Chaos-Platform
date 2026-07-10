@@ -15,6 +15,8 @@ import {
   Chip,
   Paper,
   LinearProgress,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   LocalFireDepartment as FireIcon,
@@ -22,6 +24,7 @@ import {
   CheckCircle as SuccessIcon,
   Cancel as FailedIcon,
   Explore as CompassIcon,
+  KeyboardArrowDown as ArrowDownIcon,
 } from '@mui/icons-material';
 
 // Custom high-fidelity SVGs matching the mockup exactly
@@ -40,11 +43,20 @@ const WaveIconSVG = ({ color, size = 32, ...props }) => (
 export default function DashboardView({
   experiments,
   results,
+  currentCluster,
+  setCurrentCluster,
   clusterStatus,
   onRunExperiment,
   setView,
   setSelectedExperimentForLogs,
 }) {
+  const [clusterAnchor, setClusterAnchor] = React.useState(null);
+  const handleClusterClick = (event) => setClusterAnchor(event.currentTarget);
+  const handleClusterClose = () => setClusterAnchor(null);
+  const handleSelectCluster = (cluster) => {
+    setCurrentCluster(cluster);
+    handleClusterClose();
+  };
   // Count stats
   const totalRuns = results.length;
   const successfulRuns = results.filter((r) => r.status === 'Completed').length;
@@ -55,31 +67,34 @@ export default function DashboardView({
       title: 'Pod Kill',
       desc: 'Kill Random Pods',
       type: 'Pod Kill',
-      icon: <SkullIconSVG color="#10b981" size={24} />,
-      borderColor: 'rgba(16, 185, 129, 0.2)',
+      icon: <SkullIconSVG color="#10b981" size={40} />,
+      borderColor: 'rgba(16, 185, 129, 0.35)',
       activeBorderColor: '#10b981',
-      bgGlow: 'rgba(16, 185, 129, 0.15)',
-      bgColor: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%)',
+      bgGlow: 'rgba(16, 185, 129, 0.2)',
+      bgColor: '#091c12',
+      iconBg: 'rgba(16, 185, 129, 0.1)',
     },
     {
       title: 'Network Latency',
       desc: 'Inject Latency',
       type: 'Network Chaos',
-      icon: <WaveIconSVG color="#3b82f6" size={24} />,
-      borderColor: 'rgba(59, 130, 246, 0.2)',
+      icon: <WaveIconSVG color="#3b82f6" size={40} />,
+      borderColor: 'rgba(59, 130, 246, 0.35)',
       activeBorderColor: '#3b82f6',
-      bgGlow: 'rgba(59, 130, 246, 0.15)',
-      bgColor: 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%)',
+      bgGlow: 'rgba(59, 130, 246, 0.2)',
+      bgColor: '#0a1524',
+      iconBg: 'rgba(59, 130, 246, 0.1)',
     },
     {
       title: 'CPU/Memory Stress',
       desc: 'Stress Resources',
       type: 'CPU Stress',
-      icon: <FireIcon sx={{ fontSize: 24, color: '#f97316' }} />,
-      borderColor: 'rgba(249, 115, 22, 0.2)',
+      icon: <FireIcon sx={{ fontSize: 40, color: '#f97316' }} />,
+      borderColor: 'rgba(249, 115, 22, 0.35)',
       activeBorderColor: '#f97316',
-      bgGlow: 'rgba(249, 115, 22, 0.15)',
-      bgColor: 'linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(249, 115, 22, 0.02) 100%)',
+      bgGlow: 'rgba(249, 115, 22, 0.2)',
+      bgColor: '#1c110a',
+      iconBg: 'rgba(249, 115, 22, 0.1)',
     },
   ];
 
@@ -151,10 +166,65 @@ export default function DashboardView({
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
       {/* View Header */}
-      <Box>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0 }}>
-          Dashboard
-        </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0 }}>
+            Dashboard
+          </Typography>
+        </Box>
+
+        {/* Cluster Selector Dropdown Setting */}
+        <Box>
+          <Button
+            onClick={handleClusterClick}
+            endIcon={<ArrowDownIcon />}
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              color: '#f3f4f6',
+              px: 2,
+              py: 0.8,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            <CircleIcon sx={{ color: clusterStatus === 'Healthy' ? '#10b981' : clusterStatus === 'Degraded' ? '#f97316' : '#ef4444', fontSize: 8, mr: 1 }} />
+            Cluster: {currentCluster}
+          </Button>
+
+          <Menu
+            anchorEl={clusterAnchor}
+            open={Boolean(clusterAnchor)}
+            onClose={handleClusterClose}
+            PaperProps={{
+              sx: {
+                bgcolor: '#161920',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                width: 160,
+                mt: 0.5,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              },
+            }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <MenuItem onClick={() => handleSelectCluster('production')} sx={{ fontSize: '0.85rem', color: '#fff', py: 1 }}>
+              <CircleIcon sx={{ color: '#10b981', fontSize: 6, mr: 1.5 }} /> production
+            </MenuItem>
+            <MenuItem onClick={() => handleSelectCluster('staging')} sx={{ fontSize: '0.85rem', color: '#fff', py: 1 }}>
+              <CircleIcon sx={{ color: '#f97316', fontSize: 6, mr: 1.5 }} /> staging
+            </MenuItem>
+            <MenuItem onClick={() => handleSelectCluster('development')} sx={{ fontSize: '0.85rem', color: '#fff', py: 1 }}>
+              <CircleIcon sx={{ color: '#ef4444', fontSize: 6, mr: 1.5 }} /> development
+            </MenuItem>
+          </Menu>
+        </Box>
       </Box>
 
       {/* Top Cards Grid */}
@@ -166,7 +236,8 @@ export default function DashboardView({
               sx={{
                 cursor: 'pointer',
                 background: action.bgColor,
-                border: `1px solid ${action.borderColor}`,
+                border: `1.5px solid ${action.borderColor}`,
+                borderRadius: '16px',
                 position: 'relative',
                 overflow: 'hidden',
                 '&:hover': {
@@ -177,27 +248,28 @@ export default function DashboardView({
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
-              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 3, py: 3 }}>
+              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2.5, p: 2.5, '&:last-child': { pb: 2.5 } }}>
                 <Box
                   sx={{
-                    bgcolor: action.bgGlow,
+                    bgcolor: action.iconBg,
                     p: 1.5,
-                    borderRadius: '50%',
+                    borderRadius: '12px',
                     border: `1px solid ${action.borderColor}`,
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    width: 56,
-                    height: 56,
+                    width: 72,
+                    height: 72,
+                    flexShrink: 0,
                   }}
                 >
                   {action.icon}
                 </Box>
                 <Box>
-                  <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 0.5 }}>
+                  <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 0.5, fontSize: '1.1rem' }}>
                     {action.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+                  <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '0.85rem' }}>
                     {action.desc}
                   </Typography>
                 </Box>
@@ -233,22 +305,22 @@ export default function DashboardView({
                         <TableCell sx={{ color: '#fff', fontWeight: 600 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             {run.type === 'Pod Kill' && (
-                              <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '50%', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <SkullIconSVG color="#10b981" size={18} />
                               </Box>
                             )}
                             {run.type === 'Network Chaos' && (
-                              <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', p: 1, borderRadius: '50%', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <WaveIconSVG color="#3b82f6" size={18} />
                               </Box>
                             )}
                             {(run.type === 'CPU Stress' || run.type === 'Memory Stress') && (
-                              <Box sx={{ bgcolor: 'rgba(249, 115, 22, 0.1)', p: 1, borderRadius: '50%', border: '1px solid rgba(249, 115, 22, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <Box sx={{ bgcolor: 'rgba(249, 115, 22, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(249, 115, 22, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <FireIcon sx={{ color: '#f97316', fontSize: 18 }} />
                               </Box>
                             )}
                             {run.type === 'Pod Delete' && (
-                              <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '50%', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <SkullIconSVG color="#10b981" size={18} />
                               </Box>
                             )}
@@ -311,7 +383,7 @@ export default function DashboardView({
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.05)', p: 1, borderRadius: 1, display: 'flex' }}>
+                      <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.15)', display: 'flex' }}>
                         <CompassIcon sx={{ color: '#3b82f6', fontSize: 20 }} />
                       </Box>
                       <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500 }}>
@@ -325,7 +397,7 @@ export default function DashboardView({
 
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.05)', p: 1, borderRadius: 1, display: 'flex' }}>
+                      <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.15)', display: 'flex' }}>
                         <SuccessIcon sx={{ color: '#10b981', fontSize: 20 }} />
                       </Box>
                       <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500 }}>
@@ -339,7 +411,7 @@ export default function DashboardView({
 
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ bgcolor: 'rgba(239, 68, 68, 0.05)', p: 1, borderRadius: 1, display: 'flex' }}>
+                      <Box sx={{ bgcolor: 'rgba(239, 68, 68, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.15)', display: 'flex' }}>
                         <FailedIcon sx={{ color: '#ef4444', fontSize: 20 }} />
                       </Box>
                       <Typography variant="body2" sx={{ color: '#9ca3af', fontWeight: 500 }}>

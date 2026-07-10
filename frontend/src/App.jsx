@@ -267,6 +267,8 @@ export default function App() {
             <DashboardView
               experiments={experiments}
               results={results}
+              currentCluster={currentCluster}
+              setCurrentCluster={setCurrentCluster}
               clusterStatus={clusterStatus}
               onRunExperiment={handleRunExperiment}
               setView={setSelectedView}
