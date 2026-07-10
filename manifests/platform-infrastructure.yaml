@@ -100,7 +100,7 @@ spec:
           image: asia-south1-docker.pkg.dev/chaos-platform/chaos-repo/chaos-frontend:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - containerPort: 80
 
 ---
 # Frontend Service
@@ -114,5 +114,6 @@ spec:
   selector:
     app: chaos-frontend
   ports:
-    - port: 80
+    - protocol: TCP
+      port: 80
       targetPort: 80
