@@ -9,7 +9,6 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
-  GAR_LOCATION: asia-south1
   REPOSITORY: chaos-repo
   IMAGE: chaos-frontend
 
@@ -34,44 +33,43 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
-
-      - name: Install GKE Auth Plugin
-        run: |
-          gcloud components install gke-gcloud-auth-plugin --quiet
-          echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
+          install_components: gke-gcloud-auth-plugin
 
       - name: Configure Docker
         run: |
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
 
       - name: Get GKE Credentials
+        env:
+          USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
         run: |
-          gcloud container clusters get-credentials "$GKE_CLUSTER" \
-            --zone "$GKE_ZONE" \
-            --project "$PROJECT_ID"
+          gcloud container clusters get-credentials \
+            $GKE_CLUSTER \
+            --zone $GKE_ZONE \
+            --project $PROJECT_ID
 
       - name: Verify Cluster
         run: |
-          kubectl cluster-info
           kubectl get nodes
 
       - name: Build Docker Image
         run: |
           docker build \
-            -t asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }} \
-            ./frontend
+          -t asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }} \
+          ./frontend
 
       - name: Push Docker Image
         run: |
           docker push \
-            asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }}
+          asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }}
 
       - name: Update Kubernetes Deployment
         run: |
           kubectl set image deployment/chaos-frontend \
-            chaos-frontend=asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }} \
-            -n target-zone
+          chaos-frontend=asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }} \
+          -n target-zone
 
       - name: Wait for Rollout
         run: |
-          kubectl rollout status deployment/chaos-frontend -n target-zone
+          kubectl rollout status deployment/chaos-frontend \
+          -n target-zone
