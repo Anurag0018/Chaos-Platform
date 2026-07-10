@@ -226,11 +226,11 @@ export default function App() {
           clusterStatus={clusterStatus}
         />
 
-        {/* Main Content Pane */}
         <Box
           component="main"
           sx={{
             flex: 1,
+            width: '100%',
             p: { xs: 2, sm: 3, md: 4 },
             minWidth: 0, // Prevent grid breakout
           }}
