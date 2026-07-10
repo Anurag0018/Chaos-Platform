@@ -65,9 +65,9 @@ jobs:
 
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image deployment/chaos-frontend \
-          chaos-frontend=asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }} \
-          -n target-zone
+            kubectl set image deployment/chaos-frontend \
+            frontend-ui=asia-south1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }} \
+            -n target-zone
 
       - name: Wait for Rollout
         run: |
