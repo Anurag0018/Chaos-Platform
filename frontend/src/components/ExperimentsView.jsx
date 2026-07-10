@@ -33,7 +33,21 @@ import {
   FileDownload as ExportIcon,
   Visibility as ViewIcon,
   Circle as CircleIcon,
+  LocalFireDepartment as FireIcon,
 } from '@mui/icons-material';
+
+// Custom high-fidelity SVGs matching the mockup exactly
+const SkullIconSVG = ({ color, size = 32, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color || 'currentColor'} style={{ display: 'block' }} {...props}>
+    <path d="M12,2A9,9 0 0,0 3,11C3,14.03 4.53,16.7 6.87,18.28L6.4,22H9V20H11V22H13V20H15V22H17.6L17.13,18.28C19.47,16.7 21,14.03 21,11A9,9 0 0,0 12,2M9,9.5A1.5,1.5 0 0,1 10.5,11A1.5,1.5 0 0,1 9,12.5A1.5,1.5 0 0,1 7.5,11A1.5,1.5 0 0,1 9,9.5M15,9.5A1.5,1.5 0 0,1 16.5,11A1.5,1.5 0 0,1 15,12.5A1.5,1.5 0 0,1 13.5,11A1.5,1.5 0 0,1 15,9.5M10,14H14V16H10V14Z" />
+  </svg>
+);
+
+const WaveIconSVG = ({ color, size = 32, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} {...props}>
+    <path d="M3 12h3l3-9 4 18 3-12h5" />
+  </svg>
+);
 
 export default function ExperimentsView({
   experiments,
@@ -99,16 +113,17 @@ export default function ExperimentsView({
     return (
       <Chip
         icon={
-          <span
-            className="status-dot-pulse"
-            style={{
-              width: '6px',
-              height: '6px',
-              backgroundColor: color,
-              marginLeft: '8px',
-              marginRight: '-4px',
-            }}
-          />
+          isRunning ? (
+            <span
+              className="status-dot-pulse"
+              style={{
+                width: '6px',
+                height: '6px',
+                backgroundColor: color,
+                borderRadius: '50%',
+              }}
+            />
+          ) : undefined
         }
         label={status}
         size="small"
@@ -127,6 +142,11 @@ export default function ExperimentsView({
             : 'rgba(124, 58, 237, 0.2)',
           fontSize: '0.75rem',
           fontWeight: 600,
+          px: isRunning ? 0 : 0.5,
+          '& .MuiChip-icon': {
+            marginLeft: '8px',
+            marginRight: '-4px',
+          },
         }}
       />
     );
@@ -299,17 +319,26 @@ export default function ExperimentsView({
                   <TableRow key={exp.id}>
                     <TableCell sx={{ color: '#fff', fontWeight: 600 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box
-                          sx={{
-                            bgcolor: `${getTypeColor(exp.type)}15`,
-                            p: 1,
-                            borderRadius: '50%',
-                            border: `1px solid ${getTypeColor(exp.type)}25`,
-                            display: 'flex',
-                          }}
-                        >
-                          <CircleIcon sx={{ color: getTypeColor(exp.type), fontSize: 14 }} />
-                        </Box>
+                        {exp.type === 'Pod Kill' && (
+                          <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <SkullIconSVG color="#10b981" size={18} />
+                          </Box>
+                        )}
+                        {exp.type === 'Network Chaos' && (
+                          <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <WaveIconSVG color="#3b82f6" size={18} />
+                          </Box>
+                        )}
+                        {(exp.type === 'CPU Stress' || exp.type === 'Memory Stress') && (
+                          <Box sx={{ bgcolor: 'rgba(249, 115, 22, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(249, 115, 22, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <FireIcon sx={{ color: '#f97316', fontSize: 18 }} />
+                          </Box>
+                        )}
+                        {exp.type === 'Pod Delete' && (
+                          <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <SkullIconSVG color="#10b981" size={18} />
+                          </Box>
+                        )}
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {exp.name}
@@ -549,7 +578,26 @@ export default function ExperimentsView({
                   <TableRow key={res.runId}>
                     <TableCell sx={{ color: '#fff', fontWeight: 600 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <CircleIcon sx={{ color: getTypeColor(res.type), fontSize: 10 }} />
+                        {res.type === 'Pod Kill' && (
+                          <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <SkullIconSVG color="#10b981" size={18} />
+                          </Box>
+                        )}
+                        {res.type === 'Network Chaos' && (
+                          <Box sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <WaveIconSVG color="#3b82f6" size={18} />
+                          </Box>
+                        )}
+                        {(res.type === 'CPU Stress' || res.type === 'Memory Stress') && (
+                          <Box sx={{ bgcolor: 'rgba(249, 115, 22, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(249, 115, 22, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <FireIcon sx={{ color: '#f97316', fontSize: 18 }} />
+                          </Box>
+                        )}
+                        {res.type === 'Pod Delete' && (
+                          <Box sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', p: 1, borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <SkullIconSVG color="#10b981" size={18} />
+                          </Box>
+                        )}
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {res.name}
