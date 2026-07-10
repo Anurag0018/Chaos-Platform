@@ -229,7 +229,7 @@ export default function App() {
           component="main"
           sx={{
             flexGrow: 1,
-            width: 'calc(100% - 240px)',
+            width: 'calc(100vw - 240px)',
             p: { xs: 2, sm: 3, md: 4 },
             minWidth: 0, // Prevent grid breakout
           }}
