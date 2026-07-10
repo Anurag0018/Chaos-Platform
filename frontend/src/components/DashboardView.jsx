@@ -149,7 +149,7 @@ export default function DashboardView({
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%', flexGrow: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100% !important', flexGrow: 1 }}>
       {/* View Header */}
       <Box>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff', mb: 0 }}>
@@ -158,7 +158,7 @@ export default function DashboardView({
       </Box>
 
       {/* Top Cards Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ width: '100% !important' }}>
         {quickActions.map((action) => (
           <Grid item xs={12} md={4} key={action.title}>
             <Card
@@ -210,7 +210,7 @@ export default function DashboardView({
       </Grid>
 
       {/* Bottom Layout - Recent Experiments & Sidebar Metrics */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ width: '100% !important' }}>
         {/* Recent Experiments Table (70% on large, 100% on small) */}
         <Grid item xs={12} lg={8}>
           <Card sx={{ height: '100%' }}>
