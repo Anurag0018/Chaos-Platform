@@ -34,7 +34,7 @@ const initialResults = [
   { runId: 'r8', name: 'cpu-stress-api', type: 'CPU Stress', status: 'Completed', namespace: 'target-zone', target: 'api-service', startedAt: '2025-06-25 11:05:00', duration: '2m 10s', impact: 'Low' },
 ];
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 'http://34.47.250.118:8000/api';
 
 export default function App() {
   const [selectedView, setSelectedView] = useState('dashboard');
