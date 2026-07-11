@@ -35,6 +35,113 @@ const formatLocalDate = (utcString) => {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 };
 
+const ChaosSparkline = ({ type, status }) => {
+  const isFailed = status === 'Failed';
+  
+  let color = '#7c3aed';
+  let label = 'System Metric';
+  let valueLabel = 'Normal';
+  if (type === 'Pod Kill' || type === 'Pod Delete') {
+    color = '#10b981';
+    label = 'Replica Availability';
+    valueLabel = isFailed ? '2 / 3 Replicas (Degraded)' : '3 / 3 Replicas (Healthy)';
+  } else if (type === 'Network Chaos') {
+    color = '#3b82f6';
+    label = 'Network Latency';
+    valueLabel = isFailed ? '250ms (Jitter Active)' : '14ms (Healthy)';
+  } else if (type === 'CPU Stress' || type === 'Memory Stress') {
+    color = '#f97316';
+    label = 'CPU Utilization';
+    valueLabel = isFailed ? '95% (Resource Saturation)' : '12% (Healthy)';
+  }
+
+  let d = '';
+  if (type === 'Pod Kill' || type === 'Pod Delete') {
+    d = isFailed 
+      ? 'M 0 30 L 250 30 L 250 70 L 800 70' 
+      : 'M 0 30 L 250 30 L 250 70 L 550 70 L 550 30 L 800 30';
+  } else if (type === 'Network Chaos') {
+    d = isFailed
+      ? 'M 0 85 L 150 85 C 180 85, 200 20, 230 20 L 270 45 L 310 25 L 350 55 L 390 15 L 430 40 L 800 20'
+      : 'M 0 85 L 150 85 C 180 85, 200 20, 230 20 L 270 45 L 310 25 L 350 55 L 390 15 L 430 40 L 470 20 C 500 20, 520 85, 550 85 L 800 85';
+  } else {
+    d = isFailed
+      ? 'M 0 85 L 150 85 C 190 85, 220 15, 260 15 L 800 15'
+      : 'M 0 85 L 150 85 C 190 85, 220 15, 260 15 L 530 15 C 570 15, 600 85, 640 85 L 800 85';
+  }
+
+  return (
+    <Box sx={{ width: '100%', mt: 3, pt: 3, borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+        <Box>
+          <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5, letterSpacing: '0.05em' }}>
+            TELEMETRY METRICS
+          </Typography>
+          <Typography variant="subtitle2" sx={{ color: '#fff', fontWeight: 600 }}>
+            {label}
+          </Typography>
+        </Box>
+        <Box sx={{ textAlign: 'right' }}>
+          <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5, letterSpacing: '0.05em' }}>
+            CURRENT STATUS
+          </Typography>
+          <Typography variant="body2" sx={{ color: color, fontWeight: 700 }}>
+            {valueLabel}
+          </Typography>
+        </Box>
+      </Box>
+      
+      <Box sx={{ bgcolor: 'rgba(0,0,0,0.15)', borderRadius: 2, p: 2, border: '1px solid rgba(255,255,255,0.03)', position: 'relative', overflow: 'hidden' }}>
+        <svg viewBox="0 0 800 100" width="100%" height="80px" style={{ overflow: 'visible', display: 'block' }}>
+          <defs>
+            <linearGradient id={`grad-${type}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity="0.15" />
+              <stop offset="100%" stopColor={color} stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+          
+          <line x1="0" y1="20" x2="800" y2="20" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+          <line x1="0" y1="50" x2="800" y2="50" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+          <line x1="0" y1="80" x2="800" y2="80" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+          
+          <path
+            d={`${d} L 800 100 L 0 100 Z`}
+            fill={`url(#grad-${type})`}
+            style={{
+              animation: 'fadeIn 0.5s ease forwards',
+            }}
+          />
+          
+          <path
+            d={d}
+            fill="none"
+            stroke={color}
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              strokeDasharray: 1000,
+              strokeDashoffset: 1000,
+              animation: 'drawPath 2s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+            }}
+          />
+        </svg>
+      </Box>
+      <style>{`
+        @keyframes drawPath {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
+    </Box>
+  );
+};
+
 export default function ResultsView({
   results,
   selectedRun,
@@ -298,6 +405,7 @@ export default function ResultsView({
                   </Button>
                 </Box>
               </Box>
+              <ChaosSparkline type={currentRun.type} status={currentRun.status} />
             </CardContent>
           </Card>
 
