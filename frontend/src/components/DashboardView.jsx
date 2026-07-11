@@ -179,13 +179,46 @@ export default function DashboardView({
                 borderRadius: '16px',
                 position: 'relative',
                 overflow: 'hidden',
-                height: '100%',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: `0 12px 32px ${action.bgGlow}`,
-                  borderColor: action.activeBorderColor,
-                },
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: '-100%',
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent)',
+                  transition: 'transform 0.6s ease',
+                  zIndex: 1,
+                  pointerEvents: 'none',
+                },
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: '-40px',
+                  right: '-40px',
+                  width: '120px',
+                  height: '120px',
+                  background: action.bgGlow,
+                  filter: 'blur(35px)',
+                  borderRadius: '50%',
+                  opacity: 0.2,
+                  transition: 'all 0.3s ease',
+                  pointerEvents: 'none',
+                  zIndex: 0,
+                },
+                '&:hover': {
+                  transform: 'translateY(-6px) scale(1.02)',
+                  boxShadow: `0 20px 40px ${action.bgGlow}, inset 0 0 15px ${action.borderColor}`,
+                  borderColor: action.activeBorderColor,
+                  '&::before': {
+                    transform: 'translateX(200%)',
+                  },
+                  '&::after': {
+                    opacity: 0.5,
+                    transform: 'scale(1.3)',
+                  },
+                },
               }}
             >
               <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 3, p: 3, '&:last-child': { pb: 3 } }}>

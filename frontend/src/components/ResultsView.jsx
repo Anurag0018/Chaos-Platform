@@ -46,6 +46,17 @@ export default function ResultsView({
   );
 
   const currentRun = results.find((r) => r.runId === activeRunId) || selectedRun || results[0];
+  const [logFilter, setLogFilter] = useState('ALL');
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLogs = () => {
+    if (!currentRun) return;
+    const logText = generateLogs(currentRun).join('\n');
+    navigator.clipboard.writeText(logText).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const handleBack = () => {
     setSelectedRun(null);
@@ -307,14 +318,55 @@ export default function ResultsView({
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TerminalIcon sx={{ color: '#7c3aed', fontSize: 18 }} />
-                  <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontFamily: 'monospace', fontWeight: 600 }}>
+                  <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontFamily: 'monospace', fontWeight: 600, mr: 2 }}>
                     DISRUPTION_CONSOLE_OUTPUT
                   </Typography>
+                  {/* Filter tabs */}
+                  <Box sx={{ display: 'flex', gap: 0.5, bgcolor: 'rgba(0,0,0,0.15)', borderRadius: '4px', p: 0.25 }}>
+                    {['ALL', 'INFO', 'WARN/ERROR'].map((tab) => (
+                      <Button
+                        key={tab}
+                        size="small"
+                        variant="text"
+                        onClick={() => setLogFilter(tab)}
+                        sx={{
+                          color: logFilter === tab ? '#a78bfa' : 'rgba(255,255,255,0.4)',
+                          fontSize: '0.7rem',
+                          fontWeight: 600,
+                          px: 1.2,
+                          py: 0.25,
+                          minWidth: 0,
+                          height: '24px',
+                          bgcolor: logFilter === tab ? 'rgba(167,139,250,0.08)' : 'transparent',
+                          '&:hover': { bgcolor: 'rgba(255,255,255,0.02)', color: '#fff' },
+                        }}
+                      >
+                        {tab}
+                      </Button>
+                    ))}
+                  </Box>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 0.8 }}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ef4444' }} />
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#f97316' }} />
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Button
+                    size="small"
+                    variant="text"
+                    onClick={handleCopyLogs}
+                    sx={{
+                      color: copied ? '#10b981' : '#9ca3af',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      height: '24px',
+                      '&:hover': { color: '#fff' },
+                    }}
+                  >
+                    {copied ? 'Copied!' : 'Copy Logs'}
+                  </Button>
+                  <Box sx={{ display: 'flex', gap: 0.8 }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ef4444' }} />
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#f97316' }} />
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
+                  </Box>
                 </Box>
               </Box>
 
@@ -330,33 +382,58 @@ export default function ResultsView({
                   boxShadow: 'none',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 1,
+                  gap: 1.2,
                 }}
               >
-                {generateLogs(currentRun).map((log, index) => {
-                  let color = '#d1d5db';
-                  if (log.includes('[ERROR]') || log.includes('[FATAL]')) color = '#f87171';
-                  else if (log.includes('[WARN]')) color = '#fbcfe8';
-                  else if (log.includes('[SUCCESS]')) color = '#34d399';
-                  else if (log.includes('[RUNNING]')) color = '#c084fc';
+                {generateLogs(currentRun)
+                  .filter((log) => {
+                    if (logFilter === 'INFO') {
+                      return log.includes('[INFO]') || log.includes('[SUCCESS]') || log.includes('[LOG]');
+                    }
+                    if (logFilter === 'WARN/ERROR') {
+                      return log.includes('[WARN]') || log.includes('[ERROR]') || log.includes('[FATAL]');
+                    }
+                    return true;
+                  })
+                  .map((log, index) => {
+                    let color = '#d1d5db';
+                    if (log.includes('[ERROR]') || log.includes('[FATAL]')) color = '#f87171';
+                    else if (log.includes('[WARN]')) color = '#fbcfe8';
+                    else if (log.includes('[SUCCESS]')) color = '#34d399';
+                    else if (log.includes('[RUNNING]')) color = '#c084fc';
 
-                  return (
-                    <Typography
-                      key={index}
-                      variant="body2"
-                      sx={{
-                        fontFamily: 'monospace',
-                        color: color,
-                        lineHeight: 1.6,
-                        fontSize: '0.9rem',
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-all',
-                      }}
-                    >
-                      {log}
-                    </Typography>
-                  );
-                })}
+                    return (
+                      <Box key={index} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontFamily: 'monospace',
+                            color: 'rgba(255,255,255,0.15)',
+                            userSelect: 'none',
+                            width: '20px',
+                            textAlign: 'right',
+                            fontSize: '0.9rem',
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {String(index + 1).padStart(2, '0')}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontFamily: 'monospace',
+                            color: color,
+                            lineHeight: 1.6,
+                            fontSize: '0.9rem',
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-all',
+                          }}
+                        >
+                          {log}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
                 {currentRun.status === 'Running' && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
                     <CircularProgress size={14} sx={{ color: '#7c3aed' }} />
