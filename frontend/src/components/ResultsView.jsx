@@ -175,8 +175,9 @@ export default function ResultsView({
           {/* Metadata Cards */}
           <Card sx={{ width: '100% !important' }}>
             <CardContent sx={{ p: 3 }}>
-              <Grid container spacing={3} alignItems="center" sx={{ width: '100% !important', margin: '0 !important' }}>
-                <Grid item xs={12} md={3} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, width: '100%' }}>
+                {/* Col 1 */}
+                <Box sx={{ flex: 1.5, borderRight: { md: '1px solid rgba(255,255,255,0.05)' }, pr: { md: 2 } }}>
                   <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
                     Experiment Run
                   </Typography>
@@ -186,9 +187,10 @@ export default function ResultsView({
                   <Typography variant="body2" sx={{ color: '#7c3aed', mt: 0.5, fontWeight: 600 }}>
                     {currentRun.type}
                   </Typography>
-                </Grid>
+                </Box>
 
-                <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+                {/* Col 2 */}
+                <Box sx={{ flex: 1, borderRight: { md: '1px solid rgba(255,255,255,0.05)' }, pr: { md: 2 } }}>
                   <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
                     Status
                   </Typography>
@@ -198,9 +200,10 @@ export default function ResultsView({
                       {currentRun.status}
                     </Typography>
                   </Box>
-                </Grid>
+                </Box>
 
-                <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+                {/* Col 3 */}
+                <Box sx={{ flex: 1.2, borderRight: { md: '1px solid rgba(255,255,255,0.05)' }, pr: { md: 2 } }}>
                   <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
                     Namespace & Target
                   </Typography>
@@ -210,20 +213,22 @@ export default function ResultsView({
                   <Typography variant="caption" sx={{ color: '#9ca3af' }}>
                     svc: {currentRun.target || 'N/A'}
                   </Typography>
-                </Grid>
+                </Box>
 
-                <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+                {/* Col 4 */}
+                <Box sx={{ flex: 1, borderRight: { md: '1px solid rgba(255,255,255,0.05)' }, pr: { md: 2 } }}>
                   <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
                     Duration
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
                     {currentRun.duration}
                   </Typography>
-                </Grid>
+                </Box>
 
-                <Grid item xs={6} md={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: { md: 'flex-end' } }}>
-                  <Box sx={{ mb: 1 }}>
-                    <Typography variant="caption" sx={{ color: '#9ca3af', mr: 1 }}>Impact:</Typography>
+                {/* Col 5 */}
+                <Box sx={{ flex: 1.5, display: 'flex', flexDirection: 'column', alignItems: { md: 'flex-end', xs: 'flex-start' }, justifyContent: 'center' }}>
+                  <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="caption" sx={{ color: '#9ca3af' }}>Impact:</Typography>
                     <Chip
                       label={currentRun.impact}
                       size="small"
@@ -250,12 +255,12 @@ export default function ResultsView({
                     size="small"
                     startIcon={<DownloadIcon />}
                     onClick={handleDownloadLogs}
-                    sx={{ color: '#a78bfa', '&:hover': { bgcolor: 'rgba(124, 58, 237, 0.05)' } }}
+                    sx={{ color: '#a78bfa', '&:hover': { bgcolor: 'rgba(124, 58, 237, 0.05)' }, p: 0 }}
                   >
                     Download logs
                   </Button>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </CardContent>
           </Card>
 
