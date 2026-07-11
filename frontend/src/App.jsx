@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { Box, CssBaseline } from '@mui/material';
+import {
+  Box,
+  CssBaseline,
+  Dialog,
+  DialogContent,
+  TextField,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Typography,
+} from '@mui/material';
+import { Search as SearchIcon } from '@mui/icons-material';
 import theme from './theme';
 import Sidebar from './components/Sidebar';
 import DashboardView from './components/DashboardView';
@@ -32,7 +45,7 @@ const API_BASE = '/api';
 
 export default function App() {
   const [selectedView, setSelectedView] = useState('dashboard');
-  const [currentCluster, setCurrentCluster] = useState('production');
+  const [currentCluster, setCurrentCluster] = useState('gke-production-1');
   const [clusterStatus, setClusterStatus] = useState('Healthy');
   
   // Experiments list
@@ -43,6 +56,9 @@ export default function App() {
 
   const [selectedRun, setSelectedRun] = useState(null);
   const [newExpDialogOpen, setNewExpDialogOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selIdx, setSelIdx] = useState(0);
 
   // Simulation settings
   const [settings, setSettings] = useState({
@@ -50,6 +66,53 @@ export default function App() {
     simulationSpeed: 3, // in seconds
     autoHeal: true,
   });
+
+  const commands = [
+    { text: 'Go to Dashboard', category: 'Navigation', action: () => { setSelectedView('dashboard'); } },
+    { text: 'Go to Experiments List', category: 'Navigation', action: () => { setSelectedView('experiments'); } },
+    { text: 'Go to Results Telemetry', category: 'Navigation', action: () => { setSelectedView('results'); } },
+    { text: 'Go to Platform Settings', category: 'Navigation', action: () => { setSelectedView('settings'); } },
+    { text: 'Trigger Pod Kill Disruption', category: 'Actions', action: () => { handleCreateExperiment({ name: 'CMD-Pod-Kill', description: 'Triggered from Command Palette', type: 'Pod Kill', namespace: 'target-zone', target: 'web-app' }); setSelectedView('experiments'); } },
+    { text: 'Trigger Network Latency Injection', category: 'Actions', action: () => { handleCreateExperiment({ name: 'CMD-Latency-Delay', description: 'Triggered from Command Palette', type: 'Network Chaos', namespace: 'target-zone', target: 'payment-svc' }); setSelectedView('experiments'); } },
+    { text: 'Simulate Cluster Status: Degraded', category: 'Settings', action: () => { handleSetClusterStatus('Degraded'); } },
+    { text: 'Simulate Cluster Status: Healthy', category: 'Settings', action: () => { handleSetClusterStatus('Healthy'); } },
+    { text: 'Simulate Cluster Status: Critical', category: 'Settings', action: () => { handleSetClusterStatus('Critical'); } },
+  ];
+
+  const filteredCommands = commands.filter((cmd) =>
+    cmd.text.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setPaletteOpen((prev) => !prev);
+        setSearchQuery('');
+        setSelIdx(0);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handlePaletteKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelIdx((prev) => (prev + 1) % filteredCommands.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelIdx((prev) => (prev - 1 + filteredCommands.length) % filteredCommands.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filteredCommands[selIdx]) {
+        filteredCommands[selIdx].action();
+        setPaletteOpen(false);
+      }
+    } else if (e.key === 'Escape') {
+      setPaletteOpen(false);
+    }
+  };
 
   // Fetch data on mount and poll
   useEffect(() => {
@@ -223,6 +286,11 @@ export default function App() {
           currentCluster={currentCluster}
           setCurrentCluster={setCurrentCluster}
           clusterStatus={clusterStatus}
+          onOpenPalette={() => {
+            setPaletteOpen(true);
+            setSearchQuery('');
+            setSelIdx(0);
+          }}
         />
 
         <Box
@@ -271,6 +339,7 @@ export default function App() {
           {selectedView === 'settings' && (
             <SettingsView
               currentCluster={currentCluster}
+              setCurrentCluster={setCurrentCluster}
               clusterStatus={clusterStatus}
               setClusterStatus={handleSetClusterStatus}
               settings={settings}
@@ -286,6 +355,101 @@ export default function App() {
         onClose={() => setNewExpDialogOpen(false)}
         onCreateExperiment={handleCreateExperiment}
       />
+
+      {/* Global Command Palette */}
+      <Dialog
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        scroll="paper"
+        PaperProps={{
+          sx: {
+            position: 'absolute',
+            top: '15%',
+            bgcolor: 'rgba(22, 25, 32, 0.95)',
+            backdropFilter: 'blur(8px)',
+            backgroundImage: 'none',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: 3,
+            boxShadow: '0 16px 40px rgba(0,0,0,0.6)',
+          },
+        }}
+      >
+        <DialogContent sx={{ p: 0 }}>
+          <TextField
+            autoFocus
+            fullWidth
+            placeholder="Search navigation, scenarios, action commands..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSelIdx(0);
+            }}
+            onKeyDown={handlePaletteKeyDown}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: '#9ca3af', ml: 1 }} />
+                </InputAdornment>
+              ),
+              sx: {
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                '& fieldset': { border: 'none' },
+                color: '#fff',
+                fontSize: '1rem',
+                py: 1,
+              },
+            }}
+          />
+          
+          <List sx={{ maxHeight: 300, overflowY: 'auto', p: 1.5 }}>
+            {filteredCommands.map((cmd, idx) => {
+              const isSelected = selIdx === idx;
+              return (
+                <ListItem key={idx} disablePadding sx={{ mb: 0.5 }}>
+                  <ListItemButton
+                    selected={isSelected}
+                    onClick={() => {
+                      cmd.action();
+                      setPaletteOpen(false);
+                    }}
+                    sx={{
+                      borderRadius: 2,
+                      bgcolor: isSelected ? 'rgba(124, 58, 237, 0.15) !important' : 'transparent',
+                      color: isSelected ? '#a78bfa' : '#d1d5db',
+                      py: 1.2,
+                      px: 2,
+                    }}
+                  >
+                    <ListItemText
+                      primary={cmd.text}
+                      primaryTypographyProps={{
+                        fontSize: '0.9rem',
+                        fontWeight: isSelected ? 600 : 500,
+                      }}
+                      secondary={cmd.category}
+                      secondaryTypographyProps={{
+                        fontSize: '0.7rem',
+                        color: isSelected ? 'rgba(167, 139, 250, 0.7)' : '#9ca3af',
+                        fontWeight: 600,
+                        letterSpacing: '0.05em',
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+            {filteredCommands.length === 0 && (
+              <Box sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+                  No commands found matching "{searchQuery}"
+                </Typography>
+              </Box>
+            )}
+          </List>
+        </DialogContent>
+      </Dialog>
     </ThemeProvider>
   );
 }

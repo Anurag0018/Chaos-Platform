@@ -556,6 +556,48 @@ export default function DashboardView({
                 </Typography>
               </CardContent>
             </Card>
+
+            {/* Disruption Recovery Speed Chart */}
+            <Card sx={{ borderTop: '3px solid #7c3aed' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 1 }}>
+                  Recovery Analytics
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 3 }}>
+                  Average self-healing recovery times.
+                </Typography>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                  {[
+                    { label: 'Pod Kill / Delete', time: '12s', value: 40, color: '#10b981' },
+                    { label: 'Network Chaos', time: '15s', value: 50, color: '#3b82f6' },
+                    { label: 'Resource Stress', time: '28s', value: 93, color: '#f97316' },
+                  ].map((item) => (
+                    <Box key={item.label}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
+                        <Typography variant="body2" sx={{ color: '#d1d5db', fontWeight: 600 }}>
+                          {item.label}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#fff', fontFamily: 'monospace', fontWeight: 700 }}>
+                          {item.time}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ width: '100%', height: 6, bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 3, overflow: 'hidden' }}>
+                        <Box
+                          sx={{
+                            width: `${item.value}%`,
+                            height: '100%',
+                            bgcolor: item.color,
+                            borderRadius: 3,
+                            boxShadow: `0 0 8px ${item.color}80`,
+                          }}
+                        />
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              </CardContent>
+            </Card>
           </Box>
         </Box>
       </Box>

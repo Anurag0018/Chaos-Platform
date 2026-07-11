@@ -15,6 +15,10 @@ import {
   Snackbar,
   IconButton,
   Tooltip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import {
   Save as SaveIcon,
@@ -24,6 +28,7 @@ import {
 
 export default function SettingsView({
   currentCluster,
+  setCurrentCluster,
   clusterStatus,
   setClusterStatus,
   settings,
@@ -66,28 +71,37 @@ export default function SettingsView({
   };
 
   const getNodeData = () => {
+    let allNodes = [];
     if (clusterStatus === 'Healthy') {
-      return [
+      allNodes = [
         { name: 'prod-node-1', status: 'Healthy', color: '#10b981', pods: [{ name: 'payment-svc', status: 'Ready' }, { name: 'web-app', status: 'Ready' }] },
         { name: 'prod-node-2', status: 'Healthy', color: '#10b981', pods: [{ name: 'core-api-service', status: 'Ready' }, { name: 'cache-redis', status: 'Ready' }] },
         { name: 'prod-node-3', status: 'Healthy', color: '#10b981', pods: [{ name: 'auth-service', status: 'Ready' }, { name: 'db-postgres', status: 'Ready' }] },
         { name: 'prod-node-4', status: 'Healthy', color: '#10b981', pods: [{ name: 'ingress-gateway', status: 'Ready' }, { name: 'logging-agent', status: 'Ready' }] },
       ];
-    }
-    if (clusterStatus === 'Degraded') {
-      return [
+    } else if (clusterStatus === 'Degraded') {
+      allNodes = [
         { name: 'prod-node-1', status: 'Healthy', color: '#10b981', pods: [{ name: 'payment-svc', status: 'Ready' }, { name: 'web-app', status: 'Ready' }] },
         { name: 'prod-node-2', status: 'Healthy', color: '#10b981', pods: [{ name: 'core-api-service', status: 'Ready' }, { name: 'cache-redis', status: 'Ready' }] },
         { name: 'prod-node-3', status: 'Stressed', color: '#f97316', pods: [{ name: 'auth-service', status: 'Stressed' }, { name: 'db-postgres', status: 'Ready' }] },
         { name: 'prod-node-4', status: 'Healthy', color: '#10b981', pods: [{ name: 'ingress-gateway', status: 'Ready' }, { name: 'logging-agent', status: 'Ready' }] },
       ];
+    } else {
+      allNodes = [
+        { name: 'prod-node-1', status: 'Healthy', color: '#10b981', pods: [{ name: 'payment-svc', status: 'Ready' }, { name: 'web-app', status: 'Ready' }] },
+        { name: 'prod-node-2', status: 'Healthy', color: '#10b981', pods: [{ name: 'core-api-service', status: 'Ready' }, { name: 'cache-redis', status: 'Ready' }] },
+        { name: 'prod-node-3', status: 'Offline', color: '#ef4444', pods: [{ name: 'auth-service', status: 'Crashed' }, { name: 'db-postgres', status: 'Unreachable' }] },
+        { name: 'prod-node-4', status: 'Stressed', color: '#f97316', pods: [{ name: 'ingress-gateway', status: 'Ready' }, { name: 'logging-agent', status: 'Stressed' }] },
+      ];
     }
-    return [
-      { name: 'prod-node-1', status: 'Healthy', color: '#10b981', pods: [{ name: 'payment-svc', status: 'Ready' }, { name: 'web-app', status: 'Ready' }] },
-      { name: 'prod-node-2', status: 'Healthy', color: '#10b981', pods: [{ name: 'core-api-service', status: 'Ready' }, { name: 'cache-redis', status: 'Ready' }] },
-      { name: 'prod-node-3', status: 'Offline', color: '#ef4444', pods: [{ name: 'auth-service', status: 'Crashed' }, { name: 'db-postgres', status: 'Unreachable' }] },
-      { name: 'prod-node-4', status: 'Stressed', color: '#f97316', pods: [{ name: 'ingress-gateway', status: 'Ready' }, { name: 'logging-agent', status: 'Stressed' }] },
-    ];
+    
+    if (currentCluster === 'gke-staging-2') {
+      return allNodes.slice(0, 3);
+    }
+    if (currentCluster === 'gke-dev-3') {
+      return allNodes.slice(0, 2);
+    }
+    return allNodes;
   };
   const nodes = getNodeData();
 
@@ -213,6 +227,21 @@ export default function SettingsView({
                 <Typography variant="body2" sx={{ color: '#9ca3af', mb: 3 }}>
                   Active cluster is <strong style={{ color: '#fff' }}>{currentCluster}</strong>. Select the status you want to simulate:
                 </Typography>
+
+                <FormControl fullWidth size="small" sx={{ mb: 3 }}>
+                  <InputLabel id="active-cluster-label">Active GKE Cluster</InputLabel>
+                  <Select
+                    labelId="active-cluster-label"
+                    value={currentCluster}
+                    label="Active GKE Cluster"
+                    onChange={(e) => setCurrentCluster(e.target.value)}
+                    sx={{ bgcolor: 'rgba(255,255,255,0.01)' }}
+                  >
+                    <MenuItem value="gke-production-1">gke-production-1 (Production)</MenuItem>
+                    <MenuItem value="gke-staging-2">gke-staging-2 (Staging)</MenuItem>
+                    <MenuItem value="gke-dev-3">gke-dev-3 (Development)</MenuItem>
+                  </Select>
+                </FormControl>
 
                 <Grid container spacing={1.5} sx={{ width: '100% !important', margin: '0 !important' }}>
                   {['Healthy', 'Degraded', 'Critical'].map((status) => {

@@ -27,6 +27,8 @@ export default function Sidebar({
   selectedView,
   setSelectedView,
   clusterStatus,
+  currentCluster,
+  onOpenPalette,
 }) {
   const [profileAnchor, setProfileAnchor] = React.useState(null);
 
@@ -59,6 +61,33 @@ export default function Sidebar({
           <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: '0.02em', color: '#fff' }}>
             Chaos Platform
           </Typography>
+        </Box>
+
+        {/* Search Shortcut box */}
+        <Box
+          onClick={onOpenPalette}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            bgcolor: 'rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.05)',
+            borderRadius: 1.5,
+            px: 1.5,
+            py: 1,
+            mb: 3,
+            cursor: 'pointer',
+            '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' },
+          }}
+        >
+          <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '0.85rem' }}>
+            Search controls...
+          </Typography>
+          <Box sx={{ bgcolor: 'rgba(255,255,255,0.08)', px: 0.8, py: 0.2, borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <Typography variant="caption" sx={{ color: '#fff', fontSize: '0.65rem', fontWeight: 700, fontFamily: 'monospace' }}>
+              Ctrl+K
+            </Typography>
+          </Box>
         </Box>
 
         {/* Navigation List */}
@@ -138,7 +167,7 @@ export default function Sidebar({
               CLUSTER STATUS
             </Typography>
             <Typography variant="body2" sx={{ fontWeight: 700, color: '#fff', fontSize: '0.85rem' }}>
-              gke-production-1
+              {currentCluster}
             </Typography>
           </Box>
         </Box>
