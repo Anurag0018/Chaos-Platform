@@ -171,185 +171,181 @@ export default function ResultsView({
       </Box>
 
       {currentRun ? (
-        <Grid container spacing={3} sx={{ width: '100% !important' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100% !important' }}>
           {/* Metadata Cards */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Grid container spacing={3} alignItems="center">
-                  <Grid item xs={12} md={3} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
-                    <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
-                      Experiment Run
-                    </Typography>
-                    <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700 }}>
-                      {currentRun.name}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#7c3aed', mt: 0.5, fontWeight: 600 }}>
-                      {currentRun.type}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
-                    <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
-                      Status
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {getStatusIcon(currentRun.status)}
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>
-                        {currentRun.status}
-                      </Typography>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
-                    <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
-                      Namespace & Target
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
-                      {currentRun.namespace}
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: '#9ca3af' }}>
-                      svc: {currentRun.target || 'N/A'}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
-                    <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
-                      Duration
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
-                      {currentRun.duration}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={6} md={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: { md: 'flex-end' } }}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="caption" sx={{ color: '#9ca3af', mr: 1 }}>Impact:</Typography>
-                      <Chip
-                        label={currentRun.impact}
-                        size="small"
-                        sx={{
-                          bgcolor:
-                            currentRun.impact === 'Low'
-                              ? 'rgba(16, 185, 129, 0.1)'
-                              : currentRun.impact === 'Medium'
-                              ? 'rgba(249, 115, 22, 0.1)'
-                              : 'rgba(239, 68, 68, 0.1)',
-                          color:
-                            currentRun.impact === 'Low'
-                              ? '#10b981'
-                              : currentRun.impact === 'Medium'
-                              ? '#f97316'
-                              : '#ef4444',
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
-                        }}
-                      />
-                    </Box>
-                    <Button
-                      variant="text"
-                      size="small"
-                      startIcon={<DownloadIcon />}
-                      onClick={handleDownloadLogs}
-                      sx={{ color: '#a78bfa', '&:hover': { bgcolor: 'rgba(124, 58, 237, 0.05)' } }}
-                    >
-                      Download logs
-                    </Button>
-                  </Grid>
+          <Card sx={{ width: '100% !important' }}>
+            <CardContent sx={{ p: 3 }}>
+              <Grid container spacing={3} alignItems="center" sx={{ width: '100% !important', margin: '0 !important' }}>
+                <Grid item xs={12} md={3} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+                  <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
+                    Experiment Run
+                  </Typography>
+                  <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700 }}>
+                    {currentRun.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#7c3aed', mt: 0.5, fontWeight: 600 }}>
+                    {currentRun.type}
+                  </Typography>
                 </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+
+                <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+                  <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
+                    Status
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {getStatusIcon(currentRun.status)}
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff' }}>
+                      {currentRun.status}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+                  <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
+                    Namespace & Target
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
+                    {currentRun.namespace}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+                    svc: {currentRun.target || 'N/A'}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={6} md={2} sx={{ borderRight: { md: '1px solid rgba(255,255,255,0.05)' } }}>
+                  <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 0.5 }}>
+                    Duration
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
+                    {currentRun.duration}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={6} md={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: { md: 'flex-end' } }}>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography variant="caption" sx={{ color: '#9ca3af', mr: 1 }}>Impact:</Typography>
+                    <Chip
+                      label={currentRun.impact}
+                      size="small"
+                      sx={{
+                        bgcolor:
+                          currentRun.impact === 'Low'
+                            ? 'rgba(16, 185, 129, 0.1)'
+                            : currentRun.impact === 'Medium'
+                            ? 'rgba(249, 115, 22, 0.1)'
+                            : 'rgba(239, 68, 68, 0.1)',
+                        color:
+                          currentRun.impact === 'Low'
+                            ? '#10b981'
+                            : currentRun.impact === 'Medium'
+                            ? '#f97316'
+                            : '#ef4444',
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                      }}
+                    />
+                  </Box>
+                  <Button
+                    variant="text"
+                    size="small"
+                    startIcon={<DownloadIcon />}
+                    onClick={handleDownloadLogs}
+                    sx={{ color: '#a78bfa', '&:hover': { bgcolor: 'rgba(124, 58, 237, 0.05)' } }}
+                  >
+                    Download logs
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
 
           {/* Console Output Terminal */}
-          <Grid item xs={12}>
-            <Card sx={{ bgcolor: '#0b0c10', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <CardContent sx={{ p: 0 }}>
-                {/* Console header */}
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    px: 3,
-                    py: 1.5,
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
-                    bgcolor: '#111319',
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <TerminalIcon sx={{ color: '#7c3aed', fontSize: 18 }} />
-                    <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontFamily: 'monospace', fontWeight: 600 }}>
-                      DISRUPTION_CONSOLE_OUTPUT
+          <Card sx={{ width: '100% !important', bgcolor: '#0b0c10', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <CardContent sx={{ p: 0 }}>
+              {/* Console header */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  px: 3,
+                  py: 1.5,
+                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  bgcolor: '#111319',
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TerminalIcon sx={{ color: '#7c3aed', fontSize: 18 }} />
+                  <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontFamily: 'monospace', fontWeight: 600 }}>
+                    DISRUPTION_CONSOLE_OUTPUT
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 0.8 }}>
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ef4444' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#f97316' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
+                </Box>
+              </Box>
+
+              {/* Log screen */}
+              <Box
+                component={Paper}
+                sx={{
+                  p: 3,
+                  bgcolor: 'transparent',
+                  maxHeight: 500,
+                  overflowY: 'auto',
+                  borderRadius: 0,
+                  boxShadow: 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                }}
+              >
+                {generateLogs(currentRun).map((log, index) => {
+                  let color = '#d1d5db';
+                  if (log.includes('[ERROR]') || log.includes('[FATAL]')) color = '#f87171';
+                  else if (log.includes('[WARN]')) color = '#fbcfe8';
+                  else if (log.includes('[SUCCESS]')) color = '#34d399';
+                  else if (log.includes('[RUNNING]')) color = '#c084fc';
+
+                  return (
+                    <Typography
+                      key={index}
+                      variant="body2"
+                      sx={{
+                        fontFamily: 'monospace',
+                        color: color,
+                        lineHeight: 1.6,
+                        fontSize: '0.85rem',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-all',
+                      }}
+                    >
+                      {log}
+                    </Typography>
+                  );
+                })}
+                {currentRun.status === 'Running' && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
+                    <CircularProgress size={14} sx={{ color: '#7c3aed' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontFamily: 'monospace',
+                        color: '#a78bfa',
+                        fontSize: '0.85rem',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      Awaiting cluster telemetry logs...
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', gap: 0.8 }}>
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ef4444' }} />
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#f97316' }} />
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
-                  </Box>
-                </Box>
-
-                {/* Log screen */}
-                <Box
-                  component={Paper}
-                  sx={{
-                    p: 3,
-                    bgcolor: 'transparent',
-                    maxHeight: 500,
-                    overflowY: 'auto',
-                    borderRadius: 0,
-                    boxShadow: 'none',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1,
-                  }}
-                >
-                  {generateLogs(currentRun).map((log, index) => {
-                    let color = '#d1d5db';
-                    if (log.includes('[ERROR]') || log.includes('[FATAL]')) color = '#f87171';
-                    else if (log.includes('[WARN]')) color = '#fbcfe8';
-                    else if (log.includes('[SUCCESS]')) color = '#34d399';
-                    else if (log.includes('[RUNNING]')) color = '#c084fc';
-
-                    return (
-                      <Typography
-                        key={index}
-                        variant="body2"
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: color,
-                          lineHeight: 1.6,
-                          fontSize: '0.85rem',
-                          whiteSpace: 'pre-wrap',
-                          wordBreak: 'break-all',
-                        }}
-                      >
-                        {log}
-                      </Typography>
-                    );
-                  })}
-                  {currentRun.status === 'Running' && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
-                      <CircularProgress size={14} sx={{ color: '#7c3aed' }} />
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: '#a78bfa',
-                          fontSize: '0.85rem',
-                          fontStyle: 'italic',
-                        }}
-                      >
-                        Awaiting cluster telemetry logs...
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
       ) : (
         <Card>
           <CardContent sx={{ p: 4, textAlign: 'center' }}>
