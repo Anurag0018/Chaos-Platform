@@ -92,7 +92,8 @@ const ActivityHeatmap = () => {
   };
 
   return (
-    <Card sx={{ mb: 3, borderTop: '3px solid #10b981' }}>
+    <Card sx={{ mb: 3, overflow: 'hidden' }}>
+      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #10b981 0%, #3b82f6 100%)' }} />
       <CardContent sx={{ p: 3 }}>
         <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 1 }}>
           Chaos Activity Heatmap
@@ -166,7 +167,8 @@ const ResilienceScoreboard = () => {
   ];
 
   return (
-    <Card sx={{ borderTop: '3px solid #10b981' }}>
+    <Card sx={{ overflow: 'hidden' }}>
+      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #10b981 0%, #3b82f6 100%)' }} />
       <CardContent sx={{ p: 3 }}>
         <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 1 }}>
           Resilience Scoreboard
@@ -455,7 +457,8 @@ export default function DashboardView({
       <Box sx={{ display: 'flex', gap: 3, width: '100% !important', flexDirection: { xs: 'column', lg: 'row' } }}>
         {/* Recent Experiments Table (66.6% width) */}
         <Box sx={{ flex: 2, minWidth: 0 }}>
-          <Card sx={{ height: '100%', borderTop: '3px solid #7c3aed' }}>
+          <Card sx={{ height: '100%', overflow: 'hidden' }}>
+            <Box sx={{ height: 3, background: 'linear-gradient(90deg, #7c3aed 0%, #3b82f6 100%)' }} />
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 3 }}>
                 Recent Experiments
@@ -547,7 +550,8 @@ export default function DashboardView({
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, height: '100%' }}>
             {/* Summary Metrics */}
-            <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', borderTop: '3px solid #3b82f6' }}>
+            <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+              <Box sx={{ height: 3, background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)' }} />
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 3 }}>
                   Summary
@@ -599,7 +603,8 @@ export default function DashboardView({
             </Card>
 
             {/* Cluster Health status */}
-            <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', borderTop: `3px solid ${clusterStatus === 'Healthy' ? '#10b981' : clusterStatus === 'Degraded' ? '#f97316' : '#ef4444'}` }}>
+            <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+              <Box sx={{ height: 3, bgcolor: clusterStatus === 'Healthy' ? '#10b981' : clusterStatus === 'Degraded' ? '#f97316' : '#ef4444' }} />
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 2 }}>
                   Cluster Health
@@ -647,7 +652,8 @@ export default function DashboardView({
             <ResilienceScoreboard />
 
             {/* Disruption Recovery Speed Chart */}
-            <Card sx={{ borderTop: '3px solid #7c3aed' }}>
+            <Card sx={{ overflow: 'hidden' }}>
+              <Box sx={{ height: 3, background: 'linear-gradient(90deg, #7c3aed 0%, #a78bfa 100%)' }} />
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 1 }}>
                   Recovery Analytics

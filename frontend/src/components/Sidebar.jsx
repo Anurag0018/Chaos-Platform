@@ -48,8 +48,10 @@ export default function Sidebar({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        bgcolor: '#141720',
-        borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+        bgcolor: 'rgba(20, 23, 32, 0.75)',
+        backdropFilter: 'blur(16px)',
+        borderRight: '1px solid rgba(255, 255, 255, 0.06)',
+        boxShadow: '4px 0 24px rgba(0, 0, 0, 0.3)',
         justifyContent: 'space-between',
         p: 2,
       }}

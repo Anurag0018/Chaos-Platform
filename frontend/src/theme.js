@@ -68,15 +68,22 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          padding: '6px 16px',
+          borderRadius: 10,
+          padding: '8px 20px',
+          fontWeight: 700,
+          letterSpacing: '0.02em',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'translateY(-1px)',
+          },
         },
         containedPrimary: {
-          background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
-          boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+          background: 'linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%)',
+          boxShadow: '0 4px 20px rgba(124, 58, 237, 0.35)',
           '&:hover': {
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-            boxShadow: '0 6px 16px rgba(124, 58, 237, 0.35)',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #60a5fa 100%)',
+            boxShadow: '0 6px 24px rgba(124, 58, 237, 0.5), 0 0 15px rgba(59, 130, 246, 0.3)',
+            transform: 'translateY(-2px)',
           },
         },
       },
@@ -85,9 +92,17 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: '#161920',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          borderRadius: 12,
+          backgroundColor: 'rgba(22, 25, 32, 0.65)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
+          borderRadius: 14,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          transition: 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          '&:hover': {
+            transform: 'translateY(-3px)',
+            boxShadow: '0 12px 40px rgba(124, 58, 237, 0.15), 0 0 1px rgba(255, 255, 255, 0.1) inset',
+            borderColor: 'rgba(124, 58, 237, 0.3)',
+          },
         },
       },
     },
