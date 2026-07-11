@@ -14,6 +14,7 @@ import {
   Alert,
   Snackbar,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Save as SaveIcon,
@@ -63,6 +64,32 @@ export default function SettingsView({
       setNamespaces(namespaces.filter((item) => item !== ns));
     }
   };
+
+  const getNodeData = () => {
+    if (clusterStatus === 'Healthy') {
+      return [
+        { name: 'prod-node-1', status: 'Healthy', color: '#10b981', pods: [{ name: 'payment-svc', status: 'Ready' }, { name: 'web-app', status: 'Ready' }] },
+        { name: 'prod-node-2', status: 'Healthy', color: '#10b981', pods: [{ name: 'core-api-service', status: 'Ready' }, { name: 'cache-redis', status: 'Ready' }] },
+        { name: 'prod-node-3', status: 'Healthy', color: '#10b981', pods: [{ name: 'auth-service', status: 'Ready' }, { name: 'db-postgres', status: 'Ready' }] },
+        { name: 'prod-node-4', status: 'Healthy', color: '#10b981', pods: [{ name: 'ingress-gateway', status: 'Ready' }, { name: 'logging-agent', status: 'Ready' }] },
+      ];
+    }
+    if (clusterStatus === 'Degraded') {
+      return [
+        { name: 'prod-node-1', status: 'Healthy', color: '#10b981', pods: [{ name: 'payment-svc', status: 'Ready' }, { name: 'web-app', status: 'Ready' }] },
+        { name: 'prod-node-2', status: 'Healthy', color: '#10b981', pods: [{ name: 'core-api-service', status: 'Ready' }, { name: 'cache-redis', status: 'Ready' }] },
+        { name: 'prod-node-3', status: 'Stressed', color: '#f97316', pods: [{ name: 'auth-service', status: 'Stressed' }, { name: 'db-postgres', status: 'Ready' }] },
+        { name: 'prod-node-4', status: 'Healthy', color: '#10b981', pods: [{ name: 'ingress-gateway', status: 'Ready' }, { name: 'logging-agent', status: 'Ready' }] },
+      ];
+    }
+    return [
+      { name: 'prod-node-1', status: 'Healthy', color: '#10b981', pods: [{ name: 'payment-svc', status: 'Ready' }, { name: 'web-app', status: 'Ready' }] },
+      { name: 'prod-node-2', status: 'Healthy', color: '#10b981', pods: [{ name: 'core-api-service', status: 'Ready' }, { name: 'cache-redis', status: 'Ready' }] },
+      { name: 'prod-node-3', status: 'Offline', color: '#ef4444', pods: [{ name: 'auth-service', status: 'Crashed' }, { name: 'db-postgres', status: 'Unreachable' }] },
+      { name: 'prod-node-4', status: 'Stressed', color: '#f97316', pods: [{ name: 'ingress-gateway', status: 'Ready' }, { name: 'logging-agent', status: 'Stressed' }] },
+    ];
+  };
+  const nodes = getNodeData();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100% !important' }}>
@@ -272,6 +299,77 @@ export default function SettingsView({
                     </IconButton>
                   </Box>
                 </form>
+              </CardContent>
+            </Card>
+
+            {/* Cluster Node Map */}
+            <Card sx={{ borderTop: `3px solid ${clusterStatus === 'Healthy' ? '#10b981' : clusterStatus === 'Degraded' ? '#f97316' : '#ef4444'}` }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 1 }}>
+                  Cluster Node Map
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 3 }}>
+                  Visual state of node pools in production-cluster-1.
+                </Typography>
+
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+                  {nodes.map((node) => (
+                    <Tooltip
+                      key={node.name}
+                      title={
+                        <Box sx={{ p: 0.5 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}>{node.name}</Typography>
+                          {node.pods.map((p) => (
+                            <Typography key={p.name} variant="caption" sx={{ display: 'block', color: p.status === 'Ready' ? '#34d399' : p.status === 'Stressed' ? '#fb923c' : '#f87171' }}>
+                              • {p.name} ({p.status})
+                            </Typography>
+                          ))}
+                        </Box>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Box
+                        sx={{
+                          p: 2,
+                          bgcolor: 'rgba(0,0,0,0.15)',
+                          border: '1px solid rgba(255,255,255,0.03)',
+                          borderRadius: 2,
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            bgcolor: 'rgba(255,255,255,0.02)',
+                            transform: 'translateY(-2px)',
+                            borderColor: node.color,
+                            boxShadow: `0 4px 20px ${node.color}20`,
+                          },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            bgcolor: node.color,
+                            mx: 'auto',
+                            mb: 1.5,
+                            boxShadow: `0 0 10px ${node.color}`,
+                            animation: node.color !== '#10b981' ? 'statusPulse 2s infinite ease-in-out' : 'none',
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#f3f4f6' }}>
+                          {node.name}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#9ca3af', fontSize: '0.75rem' }}>
+                          {node.status}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
+                  ))}
+                </Box>
               </CardContent>
             </Card>
           </Box>
