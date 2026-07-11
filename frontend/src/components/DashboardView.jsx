@@ -157,10 +157,10 @@ export default function DashboardView({
         </Typography>
       </Box>
 
-      {/* Top Cards Grid */}
-      <Grid container spacing={3} sx={{ width: '100% !important' }}>
+      {/* Top Cards Flex Row */}
+      <Box sx={{ display: 'flex', gap: 3, width: '100% !important', flexDirection: { xs: 'column', md: 'row' } }}>
         {quickActions.map((action) => (
-          <Grid item xs={12} sm={12} md={4} lg={4} xl={4} key={action.title}>
+          <Box key={action.title} sx={{ flex: 1, minWidth: 0 }}>
             <Card
               onClick={() => handleQuickActionClick(action)}
               sx={{
@@ -170,6 +170,7 @@ export default function DashboardView({
                 borderRadius: '16px',
                 position: 'relative',
                 overflow: 'hidden',
+                height: '100%',
                 '&:hover': {
                   transform: 'translateY(-4px)',
                   boxShadow: `0 12px 32px ${action.bgGlow}`,
@@ -205,14 +206,14 @@ export default function DashboardView({
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
 
       {/* Bottom Layout - Recent Experiments & Sidebar Metrics */}
-      <Grid container spacing={3} sx={{ width: '100% !important' }}>
-        {/* Recent Experiments Table (70% on large, 100% on small) */}
-        <Grid item xs={12} sm={12} md={12} lg={8} xl={8}>
+      <Box sx={{ display: 'flex', gap: 3, width: '100% !important', flexDirection: { xs: 'column', lg: 'row' } }}>
+        {/* Recent Experiments Table (66.6% width) */}
+        <Box sx={{ flex: 2, minWidth: 0 }}>
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 3 }}>
@@ -299,10 +300,10 @@ export default function DashboardView({
               </TableContainer>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
-        {/* Right Side Summary Panel */}
-        <Grid item xs={12} sm={12} md={12} lg={4} xl={4}>
+        {/* Right Side Summary Panel (33.3% width) */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Summary Metrics */}
             <Card>
@@ -402,8 +403,8 @@ export default function DashboardView({
               </CardContent>
             </Card>
           </Box>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 }
