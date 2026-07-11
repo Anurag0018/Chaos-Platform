@@ -4,34 +4,34 @@ const theme = createTheme({
   palette: {
     mode: 'dark',
     background: {
-      default: '#0d0e12',
-      paper: '#161920',
-      panel: '#1e2230',
+      default: '#06070a',
+      paper: '#0c0e15',
+      panel: '#101420',
     },
     primary: {
-      main: '#7c3aed', // violet
-      dark: '#6d28d9',
+      main: '#7b2cff',
+      dark: '#5a19d4',
       light: '#a78bfa',
     },
     secondary: {
-      main: '#10b981', // green for Pod Kill / Success
-      light: '#34d399',
-      dark: '#059669',
+      main: '#06f0b4',
+      light: '#3df3c4',
+      dark: '#03a37b',
     },
     info: {
-      main: '#3b82f6', // blue for Network Latency
+      main: '#3b82f6',
       light: '#60a5fa',
       dark: '#1d4ed8',
     },
     warning: {
-      main: '#f97316', // orange for CPU Stress
-      light: '#fb923c',
-      dark: '#ea580c',
+      main: '#ff8c00',
+      light: '#ffa534',
+      dark: '#cc7000',
     },
     error: {
-      main: '#ef4444', // red for Failed status
-      light: '#f87171',
-      dark: '#dc2626',
+      main: '#ff3860',
+      light: '#ff6b8b',
+      dark: '#d6002f',
     },
     text: {
       primary: '#f3f4f6',
@@ -41,10 +41,10 @@ const theme = createTheme({
     action: {
       active: '#9ca3af',
       hover: 'rgba(255, 255, 255, 0.05)',
-      selected: 'rgba(124, 58, 237, 0.15)',
+      selected: 'rgba(123, 44, 255, 0.12)',
       disabled: 'rgba(255, 255, 255, 0.3)',
     },
-    divider: 'rgba(255, 255, 255, 0.08)',
+    divider: 'rgba(123, 44, 255, 0.08)',
   },
   typography: {
     fontFamily: '"Outfit", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -92,15 +92,15 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: 'rgba(22, 25, 32, 0.65)',
+          backgroundColor: 'rgba(12, 14, 21, 0.65)',
           backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          border: '1px solid rgba(123, 44, 255, 0.08)',
           borderRadius: 14,
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
           transition: 'box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
           '&:hover': {
-            boxShadow: '0 12px 40px rgba(124, 58, 237, 0.08), 0 0 1px rgba(255, 255, 255, 0.08) inset',
-            borderColor: 'rgba(124, 58, 237, 0.15)',
+            boxShadow: '0 12px 40px rgba(123, 44, 255, 0.08), 0 0 1px rgba(123, 44, 255, 0.08) inset',
+            borderColor: 'rgba(123, 44, 255, 0.25)',
           },
         },
       },

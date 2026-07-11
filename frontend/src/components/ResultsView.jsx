@@ -504,7 +504,8 @@ export default function ResultsView({
           <Box sx={{ display: 'flex', gap: 3, width: '100% !important', flexDirection: { xs: 'column', lg: 'row' } }}>
             {/* Console Output Terminal */}
             <Box sx={{ flex: { xs: 1, lg: 2 }, minWidth: 0 }}>
-              <Card sx={{ bgcolor: '#0b0c10', border: '1px solid rgba(255,255,255,0.08)', borderTop: '3px solid #a78bfa' }}>
+              <Card sx={{ bgcolor: '#020408', border: '1px solid rgba(123, 44, 255, 0.1)', overflow: 'hidden' }}>
+                <Box sx={{ height: 3, background: 'linear-gradient(90deg, #7b2cff 0%, #06f0b4 100%)' }} />
                 <CardContent sx={{ p: 0 }}>
                   {/* Console header */}
                   <Box
@@ -515,11 +516,11 @@ export default function ResultsView({
                       px: 3,
                       py: 1.5,
                       borderBottom: '1px solid rgba(255,255,255,0.08)',
-                      bgcolor: '#111319',
+                      bgcolor: '#080a0f',
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <TerminalIcon sx={{ color: '#7c3aed', fontSize: 18 }} />
+                      <TerminalIcon sx={{ color: '#7b2cff', fontSize: 18 }} />
                       <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontFamily: 'monospace', fontWeight: 600, mr: 2 }}>
                         DISRUPTION_CONSOLE_OUTPUT
                       </Typography>
@@ -532,14 +533,14 @@ export default function ResultsView({
                             variant="text"
                             onClick={() => setLogFilter(tab)}
                             sx={{
-                              color: logFilter === tab ? '#a78bfa' : 'rgba(255,255,255,0.4)',
+                              color: logFilter === tab ? '#7b2cff' : 'rgba(255,255,255,0.4)',
                               fontSize: '0.7rem',
                               fontWeight: 600,
                               px: 1.2,
                               py: 0.25,
                               minWidth: 0,
                               height: '24px',
-                              bgcolor: logFilter === tab ? 'rgba(167,139,250,0.08)' : 'transparent',
+                              bgcolor: logFilter === tab ? 'rgba(123, 44, 255, 0.08)' : 'transparent',
                               '&:hover': { bgcolor: 'rgba(255,255,255,0.02)', color: '#fff' },
                             }}
                           >
@@ -554,7 +555,7 @@ export default function ResultsView({
                         variant="text"
                         onClick={handleCopyLogs}
                         sx={{
-                          color: copied ? '#10b981' : '#9ca3af',
+                          color: copied ? '#06f0b4' : '#9ca3af',
                           fontSize: '0.75rem',
                           fontWeight: 600,
                           textTransform: 'none',
@@ -565,9 +566,9 @@ export default function ResultsView({
                         {copied ? 'Copied!' : 'Copy Logs'}
                       </Button>
                       <Box sx={{ display: 'flex', gap: 0.8 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ef4444' }} />
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#f97316' }} />
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
+                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ff3860' }} />
+                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ff8c00' }} />
+                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#06f0b4' }} />
                       </Box>
                     </Box>
                   </Box>
@@ -598,11 +599,11 @@ export default function ResultsView({
                         return true;
                       })
                       .map((log, index) => {
-                        let color = '#d1d5db';
-                        if (log.includes('[ERROR]') || log.includes('[FATAL]')) color = '#f87171';
-                        else if (log.includes('[WARN]')) color = '#fbcfe8';
-                        else if (log.includes('[SUCCESS]')) color = '#34d399';
-                        else if (log.includes('[RUNNING]')) color = '#c084fc';
+                        let color = '#00ff66';
+                        if (log.includes('[ERROR]') || log.includes('[FATAL]')) color = '#ff3860';
+                        else if (log.includes('[WARN]')) color = '#ff8c00';
+                        else if (log.includes('[SUCCESS]')) color = '#06f0b4';
+                        else if (log.includes('[RUNNING]')) color = '#7b2cff';
 
                         return (
                           <Box key={index} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
