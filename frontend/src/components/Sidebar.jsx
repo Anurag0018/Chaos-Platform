@@ -140,37 +140,6 @@ export default function Sidebar({
 
       {/* Footer Profile & Cluster Selection */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {/* Cluster Status Widget */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            p: 1.5,
-            borderRadius: 2,
-            bgcolor: 'rgba(0, 0, 0, 0.15)',
-            border: '1px solid rgba(255, 255, 255, 0.04)',
-          }}
-        >
-          <Box
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              bgcolor: clusterStatus === 'Healthy' ? '#10b981' : clusterStatus === 'Degraded' ? '#f97316' : '#ef4444',
-              boxShadow: `0 0 8px ${clusterStatus === 'Healthy' ? '#10b981' : clusterStatus === 'Degraded' ? '#f97316' : '#ef4444'}`,
-              animation: clusterStatus !== 'Healthy' ? 'statusPulse 2s infinite ease-in-out' : 'none',
-            }}
-          />
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.05em' }}>
-              CLUSTER STATUS
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 700, color: '#fff', fontSize: '0.85rem' }}>
-              {currentCluster}
-            </Typography>
-          </Box>
-        </Box>
 
         {/* User Profile */}
         <Box
