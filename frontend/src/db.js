@@ -63,10 +63,11 @@ export async function signInWithGitHub() {
         preferred_username: 'mock-operator',
       },
     };
-    const mockSession = { user: mockUser, access_token: 'mock-jwt-token-12345' };
+    const mockSession = { user: mockUser, access_token: 'mock-jwt-token-12345', refresh_token: 'mock-refresh-token-67890' };
     localStorage.setItem('supabase.auth.token', JSON.stringify({ currentSession: mockSession }));
     localStorage.setItem('access_token', 'mock-jwt-token-12345');
     setCookie('access_token', 'mock-jwt-token-12345', 7);
+    setCookie('refresh_token', 'mock-refresh-token-67890', 30);
     window.location.reload();
     return { data: { user: mockUser }, error: null };
   }
@@ -81,6 +82,7 @@ export async function signInWithGitHub() {
 export async function signOut() {
   localStorage.removeItem('access_token');
   eraseCookie('access_token');
+  eraseCookie('refresh_token');
   if (!isSupabaseConfigured) {
     localStorage.removeItem('supabase.auth.token');
     window.location.reload();
@@ -99,6 +101,9 @@ export async function getSession() {
           localStorage.setItem('access_token', currentSession.access_token);
           setCookie('access_token', currentSession.access_token, 7);
         }
+        if (currentSession?.refresh_token) {
+          setCookie('refresh_token', currentSession.refresh_token, 30);
+        }
         return { data: { session: currentSession }, error: null };
       } catch (e) {
         return { data: { session: null }, error: null };
@@ -110,9 +115,13 @@ export async function getSession() {
   if (res.data?.session?.access_token) {
     localStorage.setItem('access_token', res.data.session.access_token);
     setCookie('access_token', res.data.session.access_token, 7);
+    if (res.data.session.refresh_token) {
+      setCookie('refresh_token', res.data.session.refresh_token, 30);
+    }
   } else {
     localStorage.removeItem('access_token');
     eraseCookie('access_token');
+    eraseCookie('refresh_token');
   }
   return res;
 }
@@ -129,12 +138,16 @@ export function onAuthStateChange(callback) {
             localStorage.setItem('access_token', currentSession.access_token);
             setCookie('access_token', currentSession.access_token, 7);
           }
+          if (currentSession?.refresh_token) {
+            setCookie('refresh_token', currentSession.refresh_token, 30);
+          }
           callback('SIGNED_IN', currentSession);
           return;
         } catch (e) {}
       }
       localStorage.removeItem('access_token');
       eraseCookie('access_token');
+      eraseCookie('refresh_token');
       callback('SIGNED_OUT', null);
     };
     
@@ -154,9 +167,13 @@ export function onAuthStateChange(callback) {
     if (session?.access_token) {
       localStorage.setItem('access_token', session.access_token);
       setCookie('access_token', session.access_token, 7);
+      if (session.refresh_token) {
+        setCookie('refresh_token', session.refresh_token, 30);
+      }
     } else {
       localStorage.removeItem('access_token');
       eraseCookie('access_token');
+      eraseCookie('refresh_token');
     }
     callback(event, session);
   });
