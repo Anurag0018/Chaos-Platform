@@ -250,17 +250,22 @@ export async function fetchResults(userId) {
   return data;
 }
 
-export async function insertResult(result, userId) {
+export async function upsertResult(result, userId) {
   if (!isSupabaseConfigured) {
     const local = await fetchResults(userId) || [];
-    local.unshift({ ...result, user_id: userId });
+    const index = local.findIndex((r) => (r.runId || r.run_id) === (result.runId || result.run_id));
+    if (index > -1) {
+      local[index] = { ...local[index], ...result };
+    } else {
+      local.unshift({ ...result, user_id: userId });
+    }
     localStorage.setItem(`results_${userId}`, JSON.stringify(local));
     return result;
   }
 
   const { data, error } = await supabase
     .from('results')
-    .insert({
+    .upsert({
       run_id: result.runId || result.run_id,
       user_id: userId,
       name: result.name,

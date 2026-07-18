@@ -33,7 +33,7 @@ import {
   fetchExperiments,
   upsertExperiment,
   fetchResults,
-  insertResult,
+  upsertResult,
   fetchSettings,
   saveSettings,
   isSupabaseConfigured,
@@ -340,7 +340,7 @@ export default function App() {
             for (const apiRes of apiResults) {
               const matched = dbResults?.find((r) => (r.run_id || r.runId) === apiRes.runId);
               if (!matched) {
-                await insertResult(apiRes, userId);
+                await upsertResult(apiRes, userId);
               }
             }
           }
@@ -459,7 +459,7 @@ export default function App() {
         const newRun = await res.json();
         setResults((prev) => [newRun, ...prev]);
         if (userId) {
-          await insertResult(newRun, userId);
+          await upsertResult(newRun, userId);
         }
       }
     } catch (err) {
@@ -488,7 +488,7 @@ export default function App() {
 
       if (userId) {
         try {
-          await insertResult(newRun, userId);
+          await upsertResult(newRun, userId);
         } catch (e) {}
       }
 
@@ -542,7 +542,7 @@ export default function App() {
         );
 
         if (userId) {
-          await insertResult(completedRun, userId).catch(console.error);
+          await upsertResult(completedRun, userId).catch(console.error);
         }
 
         if (settings?.autoHeal) {
