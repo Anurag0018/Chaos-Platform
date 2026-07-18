@@ -117,23 +117,10 @@ DB_CLUSTER = {
 }
 
 # Initial Experiments
-DB_EXPERIMENTS = [
-    {"id": "1", "name": "Pod Kill", "description": "Kill Random Pods", "type": "Pod Kill", "namespace": "target-zone", "target": "web-app", "status": "Completed", "lastRun": "2025-06-26 10:30:15"},
-    {"id": "2", "name": "Network Latency", "description": "Inject Latency", "type": "Network Chaos", "namespace": "target-zone", "target": "payment-svc", "status": "Completed", "lastRun": "2025-06-26 10:29:42"},
-    {"id": "3", "name": "CPU Stress", "description": "Stress CPU", "type": "CPU Stress", "namespace": "target-zone", "target": "api-service", "status": "Failed", "lastRun": "2025-06-26 10:10:31"},
-    {"id": "4", "name": "Memory Stress", "description": "Stress Memory", "type": "Memory Stress", "namespace": "target-zone", "target": "order-service", "status": "Completed", "lastRun": "2025-06-26 09:45:12"},
-    {"id": "5", "name": "Pod Delete", "description": "Delete Pods", "type": "Pod Delete", "namespace": "default", "target": "frontend", "status": "Completed", "lastRun": "2025-06-26 09:20:05"},
-    {"id": "6", "name": "Packet Loss DB", "description": "Inject Network Packet Loss", "type": "Network Chaos", "namespace": "target-zone", "target": "db-service", "status": "Idle", "lastRun": "Never"},
-    {"id": "7", "name": "Disk Fill Logs", "description": "Fill up ephemeral storage", "type": "Memory Stress", "namespace": "kube-system", "target": "fluentd", "status": "Idle", "lastRun": "Never"},
-    {"id": "8", "name": "API Delay Gateway", "description": "Inject 500ms API gateway lag", "type": "Network Chaos", "namespace": "default", "target": "api-gateway", "status": "Idle", "lastRun": "Never"},
-]
+DB_EXPERIMENTS = []
 
 # Initial Results matching the target mockup exactly (3 total runs)
-DB_RESULTS = [
-    {"runId": "r1", "name": "Pod Kill", "type": "Pod Kill", "status": "Completed", "namespace": "target-zone", "target": "web-app", "startedAt": "2025-06-26 10:30:15", "duration": "2m 34s", "impact": "Low"},
-    {"runId": "r2", "name": "Network Latency", "type": "Network Chaos", "status": "Completed", "namespace": "target-zone", "target": "payment-svc", "startedAt": "2025-06-26 10:29:42", "duration": "5m 12s", "impact": "Medium"},
-    {"runId": "r3", "name": "CPU Stress", "type": "CPU Stress", "status": "Failed", "namespace": "target-zone", "target": "api-service", "startedAt": "2025-06-26 10:10:31", "duration": "1m 08s", "impact": "High"},
-]
+DB_RESULTS = []
 
 # Simulation Runner task
 async def run_chaos_simulation(exp_id: str, run_id: str):
