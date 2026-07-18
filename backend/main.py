@@ -237,7 +237,20 @@ def create_experiment(item: ExperimentCreate, token: str = Depends(verify_cookie
 @app.post("/api/experiments/sync", response_model=List[Experiment])
 def sync_experiments(items: List[Experiment], token: str = Depends(verify_cookie_auth)):
     global DB_EXPERIMENTS
-    DB_EXPERIMENTS = [item.dict() for item in items]
+    new_list = []
+    for item in items:
+        existing = next((e for e in DB_EXPERIMENTS if e["id"] == item.id), None)
+        item_dict = item.dict()
+        if existing:
+            # Preserve status transitions and lastRun from backend memory
+            if existing["status"] in ["Running", "Completed", "Failed"] and item_dict["status"] == "Running":
+                item_dict["status"] = existing["status"]
+                item_dict["lastRun"] = existing["lastRun"]
+            elif existing["status"] in ["Completed", "Failed"] and item_dict["status"] in ["Idle", "Running"]:
+                item_dict["status"] = existing["status"]
+                item_dict["lastRun"] = existing["lastRun"]
+        new_list.append(item_dict)
+    DB_EXPERIMENTS = new_list
     return DB_EXPERIMENTS
 
 @app.post("/api/experiments/{id}/run", response_model=Result)

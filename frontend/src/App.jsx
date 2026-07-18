@@ -363,6 +363,16 @@ export default function App() {
               const matched = dbResults?.find((r) => (r.run_id || r.runId) === apiRes.runId);
               if (!matched || matched.status !== apiRes.status) {
                 await upsertResult(apiRes, userId);
+                
+                // Keep corresponding experiment status synchronized
+                const matchedExp = dbExps?.find((e) => e.name === apiRes.name);
+                if (matchedExp && matchedExp.status !== apiRes.status) {
+                  await upsertExperiment({
+                    ...matchedExp,
+                    status: apiRes.status,
+                    lastRun: apiRes.startedAt || apiRes.started_at,
+                  }, userId);
+                }
               }
             }
           }
