@@ -30,7 +30,8 @@ export function setCookie(name, value, days = 7) {
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
     expires = "; expires=" + date.toUTCString();
   }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure";
+  const isSecure = window.location.protocol === 'https:';
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax" + (isSecure ? "; Secure" : "");
 }
 
 export function getCookie(name) {
@@ -45,7 +46,8 @@ export function getCookie(name) {
 }
 
 export function eraseCookie(name) {
-  document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax; Secure';
+  const isSecure = window.location.protocol === 'https:';
+  document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax' + (isSecure ? '; Secure' : '');
 }
 
 // --- Auth Helpers ---

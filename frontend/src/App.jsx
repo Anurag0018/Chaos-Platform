@@ -331,11 +331,16 @@ export default function App() {
           await saveSettings(settings, userId);
         }
 
+        const token = session?.access_token || localStorage.getItem('access_token') || '';
+        const authHeaders = {
+          'Authorization': `Bearer ${token}`
+        };
+
         // Merge API state if backend is running
         try {
           const [expsRes, resultsRes] = await Promise.all([
-            fetch(`${API_BASE}/experiments`, { credentials: 'include' }),
-            fetch(`${API_BASE}/results`, { credentials: 'include' }),
+            fetch(`${API_BASE}/experiments`, { headers: authHeaders, credentials: 'include' }),
+            fetch(`${API_BASE}/results`, { headers: authHeaders, credentials: 'include' }),
           ]);
           
           if (expsRes.ok) {
@@ -361,12 +366,16 @@ export default function App() {
 
       } catch (err) {
         console.warn("Supabase database error. Falling back to local API/mock.", err);
+        const token = session?.access_token || localStorage.getItem('access_token') || '';
+        const authHeaders = {
+          'Authorization': `Bearer ${token}`
+        };
         try {
           const [expsRes, resultsRes, healthRes, settingsRes] = await Promise.all([
-            fetch(`${API_BASE}/experiments`, { credentials: 'include' }),
-            fetch(`${API_BASE}/results`, { credentials: 'include' }),
-            fetch(`${API_BASE}/cluster/health`, { credentials: 'include' }),
-            fetch(`${API_BASE}/settings`, { credentials: 'include' }),
+            fetch(`${API_BASE}/experiments`, { headers: authHeaders, credentials: 'include' }),
+            fetch(`${API_BASE}/results`, { headers: authHeaders, credentials: 'include' }),
+            fetch(`${API_BASE}/cluster/health`, { headers: authHeaders, credentials: 'include' }),
+            fetch(`${API_BASE}/settings`, { headers: authHeaders, credentials: 'include' }),
           ]);
           
           if (expsRes.ok) setExperiments(await expsRes.json());
@@ -383,7 +392,11 @@ export default function App() {
 
       // Sync cluster health status from backend API if active
       try {
-        const healthRes = await fetch(`${API_BASE}/cluster/health`, { credentials: 'include' });
+        const token = session?.access_token || localStorage.getItem('access_token') || '';
+        const authHeaders = {
+          'Authorization': `Bearer ${token}`
+        };
+        const healthRes = await fetch(`${API_BASE}/cluster/health`, { headers: authHeaders, credentials: 'include' });
         if (healthRes.ok) {
           const data = await healthRes.json();
           setClusterStatus(data.status);
@@ -419,9 +432,13 @@ export default function App() {
     }
 
     try {
+      const token = session?.access_token || localStorage.getItem('access_token') || '';
       await fetch(`${API_BASE}/experiments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newExp),
         credentials: 'include',
       });
@@ -448,8 +465,12 @@ export default function App() {
     }
 
     try {
+      const token = session?.access_token || localStorage.getItem('access_token') || '';
       const res = await fetch(`${API_BASE}/experiments/${expId}/run`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include',
       });
       if (res.ok) {
@@ -555,8 +576,12 @@ export default function App() {
     setClusterStatus(status);
     announceSpeech(`Cluster status override set to ${status}.`);
     try {
+      const token = session?.access_token || localStorage.getItem('access_token') || '';
       await fetch(`${API_BASE}/cluster/health/${status}`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include',
       });
     } catch (err) {
@@ -575,9 +600,13 @@ export default function App() {
       }
     }
     try {
+      const token = session?.access_token || localStorage.getItem('access_token') || '';
       await fetch(`${API_BASE}/settings`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newSettings),
         credentials: 'include',
       });
