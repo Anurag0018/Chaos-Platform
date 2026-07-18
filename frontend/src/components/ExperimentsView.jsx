@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Card,
@@ -6,7 +6,6 @@ import {
   Typography,
   TextField,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   Button,
@@ -35,7 +34,6 @@ import {
   MoreVert as MoreVertIcon,
   FileDownload as ExportIcon,
   Visibility as ViewIcon,
-  Circle as CircleIcon,
   LocalFireDepartment as FireIcon,
   GridView as GridIcon,
   ViewList as ListIcon,
@@ -73,7 +71,6 @@ export default function ExperimentsView({
   results,
   onRunExperiment,
   onOpenNewExperimentDialog,
-  selectedExperimentForLogs,
   setSelectedExperimentForLogs,
   setView,
   onStopExperiment,
@@ -194,7 +191,6 @@ export default function ExperimentsView({
   const getImpactChip = (impact) => {
     const isLow = impact === 'Low';
     const isMed = impact === 'Medium';
-    const isHigh = impact === 'High';
 
     return (
       <Chip

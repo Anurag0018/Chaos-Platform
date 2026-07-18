@@ -734,7 +734,6 @@ export default function App() {
               results={results}
               onRunExperiment={handleRunExperiment}
               onOpenNewExperimentDialog={() => setNewExpDialogOpen(true)}
-              selectedExperimentForLogs={selectedRun}
               setSelectedExperimentForLogs={setSelectedRun}
               setView={setSelectedView}
               onStopExperiment={handleStopExperiment}
