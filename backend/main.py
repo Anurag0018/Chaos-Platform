@@ -274,6 +274,24 @@ def run_experiment(id: str, background_tasks: BackgroundTasks, token: str = Depe
     
     return new_run
 
+@app.post("/api/experiments/{id}/stop", response_model=Experiment)
+def stop_experiment(id: str, token: str = Depends(verify_cookie_auth)):
+    exp = next((e for e in DB_EXPERIMENTS if e["id"] == id), None)
+    if not exp:
+        raise HTTPException(status_code=404, detail="Experiment not found")
+        
+    exp["status"] = "Idle"
+    
+    # Also update any running results for this experiment to Failed/Aborted
+    for r in DB_RESULTS:
+        if r["name"] == exp["name"] and r["status"] == "Running":
+            r["status"] = "Failed"
+            r["duration"] = "Aborted"
+            r["impact"] = "None"
+            
+    DB_CLUSTER["status"] = "Healthy"
+    return exp
+
 @app.get("/api/results", response_model=List[Result])
 def get_results(token: str = Depends(verify_cookie_auth)):
     return DB_RESULTS

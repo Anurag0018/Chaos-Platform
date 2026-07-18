@@ -25,6 +25,7 @@ import {
   Tooltip,
   Grid,
   Divider,
+  Menu,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -38,6 +39,8 @@ import {
   LocalFireDepartment as FireIcon,
   GridView as GridIcon,
   ViewList as ListIcon,
+  Stop as StopIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 
 // Custom high-fidelity SVGs matching the mockup exactly
@@ -73,7 +76,29 @@ export default function ExperimentsView({
   selectedExperimentForLogs,
   setSelectedExperimentForLogs,
   setView,
+  onStopExperiment,
 }) {
+  // Menu anchors for Action Menu
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [activeExp, setActiveExp] = useState(null);
+
+  const handleOpenMenu = (event, exp) => {
+    setMenuAnchor(event.currentTarget);
+    setActiveExp(exp);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuAnchor(null);
+    setActiveExp(null);
+  };
+
+  const handleStop = () => {
+    if (activeExp && onStopExperiment) {
+      onStopExperiment(activeExp.id);
+    }
+    handleCloseMenu();
+  };
+
   // Search & Filter state for Experiments
   const [layout, setLayout] = useState('list');
   const [expSearch, setExpSearch] = useState('');
@@ -442,6 +467,7 @@ export default function ExperimentsView({
                           </IconButton>
                           <IconButton
                             size="small"
+                            onClick={(e) => handleOpenMenu(e, exp)}
                             sx={{
                               color: '#9ca3af',
                               '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.03)' },
@@ -571,6 +597,7 @@ export default function ExperimentsView({
                         </IconButton>
                         <IconButton
                           size="small"
+                          onClick={(e) => handleOpenMenu(e, exp)}
                           sx={{
                             color: '#9ca3af',
                             '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.03)' },
@@ -877,6 +904,38 @@ export default function ExperimentsView({
           </Box>
         </CardContent>
       </Card>
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={handleCloseMenu}
+        PaperProps={{
+          sx: {
+            bgcolor: '#0c0e15',
+            border: '1px solid rgba(123, 44, 255, 0.15)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            color: '#fff',
+            '& .MuiMenuItem-root': {
+              fontSize: '0.85rem',
+              py: 1,
+              px: 2,
+              gap: 1.5,
+              '&:hover': {
+                bgcolor: 'rgba(123, 44, 255, 0.08)',
+              }
+            }
+          }
+        }}
+      >
+        {activeExp?.status === 'Running' && (
+          <MenuItem onClick={handleStop} sx={{ color: '#ef4444' }}>
+            <StopIcon fontSize="small" /> Stop Disruption
+          </MenuItem>
+        )}
+        <MenuItem onClick={handleCloseMenu}>
+          <CloseIcon fontSize="small" sx={{ color: '#9ca3af' }} /> Close
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }

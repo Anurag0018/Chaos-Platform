@@ -576,6 +576,53 @@ export default function App() {
     }
   };
 
+  const handleStopExperiment = async (expId) => {
+    const expObj = experiments.find((e) => e.id === expId);
+    if (!expObj) return;
+
+    announceSpeech(`Stopping chaos simulation scenario ${expObj.name}.`);
+
+    const updatedExp = { ...expObj, status: 'Idle' };
+    setExperiments((prev) =>
+      prev.map((e) => (e.id === expId ? updatedExp : e))
+    );
+
+    const userId = session?.user?.id;
+    if (userId) {
+      try {
+        await upsertExperiment(updatedExp, userId);
+      } catch (err) {
+        console.warn("Could not stop experiment in Supabase:", err);
+      }
+    }
+
+    setResults((prev) =>
+      prev.map((r) => {
+        if (r.name === expObj.name && r.status === 'Running') {
+          const completedRun = { ...r, status: 'Failed', duration: 'Aborted', impact: 'None' };
+          if (userId) {
+            upsertResult(completedRun, userId).catch(console.error);
+          }
+          return completedRun;
+        }
+        return r;
+      })
+    );
+
+    try {
+      const token = session?.access_token || localStorage.getItem('access_token') || '';
+      await fetch(`${API_BASE}/experiments/${expId}/stop`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.warn("Could not call stop endpoint on backend:", err);
+    }
+  };
+
   const handleSetClusterStatus = async (status) => {
     setClusterStatus(status);
     announceSpeech(`Cluster status override set to ${status}.`);
@@ -690,6 +737,7 @@ export default function App() {
               selectedExperimentForLogs={selectedRun}
               setSelectedExperimentForLogs={setSelectedRun}
               setView={setSelectedView}
+              onStopExperiment={handleStopExperiment}
             />
           )}
 
