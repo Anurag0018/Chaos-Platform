@@ -29,6 +29,8 @@ export default function Sidebar({
   clusterStatus,
   currentCluster,
   onOpenPalette,
+  session,
+  onSignOut,
 }) {
   const [profileAnchor, setProfileAnchor] = React.useState(null);
 
@@ -59,7 +61,7 @@ export default function Sidebar({
       <Box>
         {/* Logo Section */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1, py: 2, mb: 2 }}>
-          <LogoIcon sx={{ color: '#7c3aed', fontSize: 28 }} />
+          <LogoIcon sx={{ color: '#7b2cff', fontSize: 28 }} />
           <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: '0.02em', color: '#fff' }}>
             Chaos Platform
           </Typography>
@@ -106,8 +108,8 @@ export default function Sidebar({
                     borderRadius: 1.5,
                     py: 1.2,
                     px: 2,
-                    bgcolor: isSelected ? 'rgba(124, 58, 237, 0.15)' : 'transparent',
-                    borderLeft: isSelected ? '3px solid #7c3aed' : '3px solid transparent',
+                    bgcolor: isSelected ? 'rgba(123, 44, 255, 0.15)' : 'transparent',
+                    borderLeft: isSelected ? '3px solid #7b2cff' : '3px solid transparent',
                     color: isSelected ? '#a78bfa' : '#9ca3af',
                     '&:hover': {
                       bgcolor: 'rgba(255, 255, 255, 0.03)',
@@ -153,7 +155,7 @@ export default function Sidebar({
             p: 1.5,
             borderRadius: 2,
             bgcolor: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(123, 44, 255, 0.08)',
             cursor: 'pointer',
             '&:hover': {
               bgcolor: 'rgba(255, 255, 255, 0.05)',
@@ -161,10 +163,11 @@ export default function Sidebar({
             transition: 'background-color 0.2s',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '85%' }}>
             <Avatar
+              src={session?.user?.user_metadata?.avatar_url}
               sx={{
-                bgcolor: '#4f46e5',
+                bgcolor: '#7b2cff',
                 color: '#fff',
                 fontSize: '0.875rem',
                 fontWeight: 700,
@@ -172,14 +175,14 @@ export default function Sidebar({
                 height: 36,
               }}
             >
-              AD
+              {session?.user?.user_metadata?.user_name?.substring(0, 2).toUpperCase() || session?.user?.email?.substring(0, 2).toUpperCase() || 'OP'}
             </Avatar>
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#f3f4f6', lineHeight: 1.2 }}>
-                admin
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#f3f4f6', lineHeight: 1.2, noWrap: true, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {session?.user?.user_metadata?.user_name || session?.user?.user_metadata?.preferred_username || 'Operator'}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#9ca3af' }}>
-                Cluster Admin
+              <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', noWrap: true, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {session?.user?.email}
               </Typography>
             </Box>
           </Box>
@@ -192,8 +195,8 @@ export default function Sidebar({
           onClose={handleProfileClose}
           PaperProps={{
             sx: {
-              bgcolor: '#1e2230',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              bgcolor: '#0c0e15',
+              border: '1px solid rgba(123, 44, 255, 0.15)',
               width: 200,
               mt: -1,
             },
@@ -203,8 +206,8 @@ export default function Sidebar({
         >
           <MenuItem onClick={handleProfileClose} sx={{ fontSize: '0.9rem' }}>My Profile</MenuItem>
           <MenuItem onClick={handleProfileClose} sx={{ fontSize: '0.9rem' }}>Account Settings</MenuItem>
-          <Divider sx={{ opacity: 0.1 }} />
-          <MenuItem onClick={handleProfileClose} sx={{ fontSize: '0.9rem', color: '#ef4444' }}>Logout</MenuItem>
+          <Divider sx={{ opacity: 0.1, bgcolor: 'rgba(123, 44, 255, 0.1)' }} />
+          <MenuItem onClick={() => { handleProfileClose(); onSignOut(); }} sx={{ fontSize: '0.9rem', color: '#ff3860' }}>Sign Out</MenuItem>
         </Menu>
       </Box>
     </Box>
