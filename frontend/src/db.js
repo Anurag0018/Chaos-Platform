@@ -36,7 +36,9 @@ export async function signInWithGitHub() {
         preferred_username: 'mock-operator',
       },
     };
-    localStorage.setItem('supabase.auth.token', JSON.stringify({ currentSession: { user: mockUser } }));
+    const mockSession = { user: mockUser, access_token: 'mock-jwt-token-12345' };
+    localStorage.setItem('supabase.auth.token', JSON.stringify({ currentSession: mockSession }));
+    localStorage.setItem('access_token', 'mock-jwt-token-12345');
     window.location.reload();
     return { data: { user: mockUser }, error: null };
   }
@@ -49,6 +51,7 @@ export async function signInWithGitHub() {
 }
 
 export async function signOut() {
+  localStorage.removeItem('access_token');
   if (!isSupabaseConfigured) {
     localStorage.removeItem('supabase.auth.token');
     window.location.reload();
@@ -63,6 +66,9 @@ export async function getSession() {
     if (tokenStr) {
       try {
         const { currentSession } = JSON.parse(tokenStr);
+        if (currentSession?.access_token) {
+          localStorage.setItem('access_token', currentSession.access_token);
+        }
         return { data: { session: currentSession }, error: null };
       } catch (e) {
         return { data: { session: null }, error: null };
@@ -70,7 +76,13 @@ export async function getSession() {
     }
     return { data: { session: null }, error: null };
   }
-  return supabase.auth.getSession();
+  const res = await supabase.auth.getSession();
+  if (res.data?.session?.access_token) {
+    localStorage.setItem('access_token', res.data.session.access_token);
+  } else {
+    localStorage.removeItem('access_token');
+  }
+  return res;
 }
 
 export function onAuthStateChange(callback) {
@@ -81,10 +93,14 @@ export function onAuthStateChange(callback) {
       if (tokenStr) {
         try {
           const { currentSession } = JSON.parse(tokenStr);
+          if (currentSession?.access_token) {
+            localStorage.setItem('access_token', currentSession.access_token);
+          }
           callback('SIGNED_IN', currentSession);
           return;
         } catch (e) {}
       }
+      localStorage.removeItem('access_token');
       callback('SIGNED_OUT', null);
     };
     
@@ -100,7 +116,14 @@ export function onAuthStateChange(callback) {
       },
     };
   }
-  return supabase.auth.onAuthStateChange(callback);
+  return supabase.auth.onAuthStateChange((event, session) => {
+    if (session?.access_token) {
+      localStorage.setItem('access_token', session.access_token);
+    } else {
+      localStorage.removeItem('access_token');
+    }
+    callback(event, session);
+  });
 }
 
 // --- Database Helpers ---
