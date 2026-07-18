@@ -79,6 +79,7 @@ class Experiment(BaseModel):
     lastRun: str
 
 class ExperimentCreate(BaseModel):
+    id: Optional[str] = None
     name: str
     description: Optional[str] = ""
     type: str
@@ -219,8 +220,9 @@ def get_experiments(token: str = Depends(verify_cookie_auth)):
 
 @app.post("/api/experiments", response_model=Experiment)
 def create_experiment(item: ExperimentCreate, token: str = Depends(verify_cookie_auth)):
+    exp_id = item.id if item.id else str(len(DB_EXPERIMENTS) + 1)
     new_exp = {
-        "id": str(len(DB_EXPERIMENTS) + 1),
+        "id": exp_id,
         "name": item.name,
         "description": item.description or f"Custom chaos targeting {item.target}",
         "type": item.type,
@@ -231,6 +233,12 @@ def create_experiment(item: ExperimentCreate, token: str = Depends(verify_cookie
     }
     DB_EXPERIMENTS.insert(0, new_exp) # Add to top
     return new_exp
+
+@app.post("/api/experiments/sync", response_model=List[Experiment])
+def sync_experiments(items: List[Experiment], token: str = Depends(verify_cookie_auth)):
+    global DB_EXPERIMENTS
+    DB_EXPERIMENTS = [item.dict() for item in items]
+    return DB_EXPERIMENTS
 
 @app.post("/api/experiments/{id}/run", response_model=Result)
 def run_experiment(id: str, background_tasks: BackgroundTasks, token: str = Depends(verify_cookie_auth)):

@@ -320,6 +320,28 @@ export default function App() {
 
         // Merge API state if backend is running
         try {
+          if (dbExps) {
+            const mappedExps = dbExps.map((e) => ({
+              id: e.id,
+              name: e.name,
+              description: e.description,
+              type: e.type,
+              namespace: e.namespace,
+              target: e.target,
+              status: e.status,
+              lastRun: e.last_run || e.lastRun || 'Never',
+            }));
+            await fetch(`${API_BASE}/experiments/sync`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(mappedExps),
+              credentials: 'include',
+            });
+          }
+
           const [expsRes, resultsRes] = await Promise.all([
             fetch(`${API_BASE}/experiments`, { headers: authHeaders, credentials: 'include' }),
             fetch(`${API_BASE}/results`, { headers: authHeaders, credentials: 'include' }),
@@ -421,7 +443,7 @@ export default function App() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(newExp),
+        body: JSON.stringify(freshExp),
         credentials: 'include',
       });
     } catch (err) {
