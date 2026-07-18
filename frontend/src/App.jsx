@@ -329,7 +329,7 @@ export default function App() {
             const apiExps = await expsRes.json();
             for (const apiExp of apiExps) {
               const matched = dbExps?.find((e) => e.id === apiExp.id);
-              if (matched && matched.status !== apiExp.status) {
+              if (!matched || matched.status !== apiExp.status) {
                 await upsertExperiment(apiExp, userId);
               }
             }
@@ -339,7 +339,7 @@ export default function App() {
             const apiResults = await resultsRes.json();
             for (const apiRes of apiResults) {
               const matched = dbResults?.find((r) => (r.run_id || r.runId) === apiRes.runId);
-              if (!matched) {
+              if (!matched || matched.status !== apiRes.status) {
                 await upsertResult(apiRes, userId);
               }
             }
