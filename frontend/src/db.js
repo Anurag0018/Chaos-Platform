@@ -21,6 +21,33 @@ if (!isSupabaseConfigured) {
   );
 }
 
+// --- Cookie Helpers ---
+
+export function setCookie(name, value, days = 7) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure";
+}
+
+export function getCookie(name) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+export function eraseCookie(name) {
+  document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax; Secure';
+}
+
 // --- Auth Helpers ---
 
 export async function signInWithGitHub() {
@@ -39,6 +66,7 @@ export async function signInWithGitHub() {
     const mockSession = { user: mockUser, access_token: 'mock-jwt-token-12345' };
     localStorage.setItem('supabase.auth.token', JSON.stringify({ currentSession: mockSession }));
     localStorage.setItem('access_token', 'mock-jwt-token-12345');
+    setCookie('access_token', 'mock-jwt-token-12345', 7);
     window.location.reload();
     return { data: { user: mockUser }, error: null };
   }
@@ -52,6 +80,7 @@ export async function signInWithGitHub() {
 
 export async function signOut() {
   localStorage.removeItem('access_token');
+  eraseCookie('access_token');
   if (!isSupabaseConfigured) {
     localStorage.removeItem('supabase.auth.token');
     window.location.reload();
@@ -68,6 +97,7 @@ export async function getSession() {
         const { currentSession } = JSON.parse(tokenStr);
         if (currentSession?.access_token) {
           localStorage.setItem('access_token', currentSession.access_token);
+          setCookie('access_token', currentSession.access_token, 7);
         }
         return { data: { session: currentSession }, error: null };
       } catch (e) {
@@ -79,8 +109,10 @@ export async function getSession() {
   const res = await supabase.auth.getSession();
   if (res.data?.session?.access_token) {
     localStorage.setItem('access_token', res.data.session.access_token);
+    setCookie('access_token', res.data.session.access_token, 7);
   } else {
     localStorage.removeItem('access_token');
+    eraseCookie('access_token');
   }
   return res;
 }
@@ -95,12 +127,14 @@ export function onAuthStateChange(callback) {
           const { currentSession } = JSON.parse(tokenStr);
           if (currentSession?.access_token) {
             localStorage.setItem('access_token', currentSession.access_token);
+            setCookie('access_token', currentSession.access_token, 7);
           }
           callback('SIGNED_IN', currentSession);
           return;
         } catch (e) {}
       }
       localStorage.removeItem('access_token');
+      eraseCookie('access_token');
       callback('SIGNED_OUT', null);
     };
     
@@ -119,8 +153,10 @@ export function onAuthStateChange(callback) {
   return supabase.auth.onAuthStateChange((event, session) => {
     if (session?.access_token) {
       localStorage.setItem('access_token', session.access_token);
+      setCookie('access_token', session.access_token, 7);
     } else {
       localStorage.removeItem('access_token');
+      eraseCookie('access_token');
     }
     callback(event, session);
   });

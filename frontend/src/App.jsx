@@ -334,8 +334,8 @@ export default function App() {
         // Merge API state if backend is running
         try {
           const [expsRes, resultsRes] = await Promise.all([
-            fetch(`${API_BASE}/experiments`),
-            fetch(`${API_BASE}/results`),
+            fetch(`${API_BASE}/experiments`, { credentials: 'include' }),
+            fetch(`${API_BASE}/results`, { credentials: 'include' }),
           ]);
           
           if (expsRes.ok) {
@@ -363,10 +363,10 @@ export default function App() {
         console.warn("Supabase database error. Falling back to local API/mock.", err);
         try {
           const [expsRes, resultsRes, healthRes, settingsRes] = await Promise.all([
-            fetch(`${API_BASE}/experiments`),
-            fetch(`${API_BASE}/results`),
-            fetch(`${API_BASE}/cluster/health`),
-            fetch(`${API_BASE}/settings`),
+            fetch(`${API_BASE}/experiments`, { credentials: 'include' }),
+            fetch(`${API_BASE}/results`, { credentials: 'include' }),
+            fetch(`${API_BASE}/cluster/health`, { credentials: 'include' }),
+            fetch(`${API_BASE}/settings`, { credentials: 'include' }),
           ]);
           
           if (expsRes.ok) setExperiments(await expsRes.json());
@@ -383,7 +383,7 @@ export default function App() {
 
       // Sync cluster health status from backend API if active
       try {
-        const healthRes = await fetch(`${API_BASE}/cluster/health`);
+        const healthRes = await fetch(`${API_BASE}/cluster/health`, { credentials: 'include' });
         if (healthRes.ok) {
           const data = await healthRes.json();
           setClusterStatus(data.status);
@@ -423,6 +423,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newExp),
+        credentials: 'include',
       });
     } catch (err) {
       console.warn("Could not create experiment on backend:", err);
@@ -449,6 +450,7 @@ export default function App() {
     try {
       const res = await fetch(`${API_BASE}/experiments/${expId}/run`, {
         method: 'POST',
+        credentials: 'include',
       });
       if (res.ok) {
         const newRun = await res.json();
@@ -555,6 +557,7 @@ export default function App() {
     try {
       await fetch(`${API_BASE}/cluster/health/${status}`, {
         method: 'POST',
+        credentials: 'include',
       });
     } catch (err) {
       console.warn("Could not sync cluster status to backend:", err);
@@ -576,6 +579,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newSettings),
+        credentials: 'include',
       });
     } catch (err) {
       console.warn("Could not sync settings to backend:", err);

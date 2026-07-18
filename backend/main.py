@@ -3,7 +3,7 @@ import datetime
 import os
 import random
 from typing import List, Optional
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 try:
@@ -15,6 +15,22 @@ except ImportError:
     ApiException = None
 
 app = FastAPI(title="Chaos Platform API")
+
+# Helper dependency to enforce cookie-based auth
+def verify_cookie_auth(request: Request):
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        # Fallback to Authorization header if cookies are restricted in testing
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            access_token = auth_header.split(" ")[1]
+            
+    if not access_token:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized: Access token cookie is missing"
+        )
+    return access_token
 
 # Initialize Kubernetes Client
 # Try loading incluster config first (when running as a pod in k8s)
@@ -37,9 +53,15 @@ except Exception as e:
     print("Running in MOCK mode (Kubernetes client disabled).")
 
 # Enable CORS for frontend requests
+# Credentials require explicit origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In development, allow all origins
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -205,11 +227,11 @@ async def run_chaos_simulation(exp_id: str, run_id: str):
 
 # API Endpoints
 @app.get("/api/experiments", response_model=List[Experiment])
-def get_experiments():
+def get_experiments(token: str = Depends(verify_cookie_auth)):
     return DB_EXPERIMENTS
 
 @app.post("/api/experiments", response_model=Experiment)
-def create_experiment(item: ExperimentCreate):
+def create_experiment(item: ExperimentCreate, token: str = Depends(verify_cookie_auth)):
     new_exp = {
         "id": str(len(DB_EXPERIMENTS) + 1),
         "name": item.name,
@@ -224,7 +246,7 @@ def create_experiment(item: ExperimentCreate):
     return new_exp
 
 @app.post("/api/experiments/{id}/run", response_model=Result)
-def run_experiment(id: str, background_tasks: BackgroundTasks):
+def run_experiment(id: str, background_tasks: BackgroundTasks, token: str = Depends(verify_cookie_auth)):
     # Find experiment
     exp = next((e for e in DB_EXPERIMENTS if e["id"] == id), None)
     if not exp:
@@ -258,11 +280,11 @@ def run_experiment(id: str, background_tasks: BackgroundTasks):
     return new_run
 
 @app.get("/api/results", response_model=List[Result])
-def get_results():
+def get_results(token: str = Depends(verify_cookie_auth)):
     return DB_RESULTS
 
 @app.get("/api/cluster/health")
-def get_cluster_health():
+def get_cluster_health(token: str = Depends(verify_cookie_auth)):
     if not k8s_v1:
         return {"status": DB_CLUSTER["status"]}
     
@@ -293,14 +315,14 @@ def get_cluster_health():
         return {"status": DB_CLUSTER["status"]}
 
 @app.post("/api/cluster/health/{status}")
-def override_cluster_health(status: str):
+def override_cluster_health(status: str, token: str = Depends(verify_cookie_auth)):
     if status not in ["Healthy", "Degraded", "Critical"]:
         raise HTTPException(status_code=400, detail="Invalid status")
     DB_CLUSTER["status"] = status
     return {"status": DB_CLUSTER["status"]}
 
 @app.get("/api/kubernetes/namespaces", response_model=List[str])
-def get_kubernetes_namespaces():
+def get_kubernetes_namespaces(token: str = Depends(verify_cookie_auth)):
     if not k8s_v1:
         # Fallback list of mock namespaces
         return ["target-zone", "default", "kube-system", "production-gate"]
@@ -313,7 +335,7 @@ def get_kubernetes_namespaces():
         return ["target-zone", "default", "kube-system", "production-gate"]
 
 @app.get("/api/kubernetes/targets", response_model=List[str])
-def get_kubernetes_targets(namespace: str = "target-zone"):
+def get_kubernetes_targets(namespace: str = "target-zone", token: str = Depends(verify_cookie_auth)):
     if not k8s_v1:
         # Fallback list of mock targets
         if namespace == "target-zone":
@@ -351,11 +373,11 @@ def get_kubernetes_targets(namespace: str = "target-zone"):
         return ["web-app", "payment-svc", "api-service", "order-service", "db-service"]
 
 @app.get("/api/settings", response_model=Settings)
-def get_settings():
+def get_settings(token: str = Depends(verify_cookie_auth)):
     return DB_SETTINGS
 
 @app.post("/api/settings", response_model=Settings)
-def update_settings(item: Settings):
+def update_settings(item: Settings, token: str = Depends(verify_cookie_auth)):
     DB_SETTINGS["successRate"] = item.successRate
     DB_SETTINGS["simulationSpeed"] = item.simulationSpeed
     DB_SETTINGS["autoHeal"] = item.autoHeal
