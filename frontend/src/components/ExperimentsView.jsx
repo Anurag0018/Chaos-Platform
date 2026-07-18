@@ -432,7 +432,7 @@ export default function ExperimentsView({
                         </Box>
                       </TableCell>
                       <TableCell>{getStatusChip(exp.status)}</TableCell>
-                      <TableCell sx={{ color: '#9ca3af', fontSize: '0.85rem' }}>{exp.lastRun}</TableCell>
+                      <TableCell sx={{ color: '#9ca3af', fontSize: '0.85rem' }}>{formatLocalDate(exp.lastRun)}</TableCell>
                       <TableCell align="right">
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
                           {exp.status === 'Running' ? (
@@ -555,7 +555,7 @@ export default function ExperimentsView({
                           </Box>
                           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Typography variant="caption" sx={{ color: '#9ca3af' }}>Last Run</Typography>
-                            <Typography variant="caption" sx={{ color: '#9ca3af' }}>{exp.lastRun || 'Never'}</Typography>
+                            <Typography variant="caption" sx={{ color: '#9ca3af' }}>{formatLocalDate(exp.lastRun)}</Typography>
                           </Box>
                         </Box>
                       </CardContent>

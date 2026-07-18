@@ -274,24 +274,9 @@ export default function App() {
           fetchSettings(userId),
         ]);
 
-        if (dbExps) {
-          const mappedExps = dbExps.map((e) => ({
-            id: e.id,
-            name: e.name,
-            description: e.description,
-            type: e.type,
-            namespace: e.namespace,
-            target: e.target,
-            status: e.status,
-            lastRun: e.last_run || e.lastRun || 'Never',
-          }));
-          setExperiments(mappedExps);
-        } else {
-          setExperiments([]);
-        }
-
+        let mappedResults = [];
         if (dbResults) {
-          const mappedResults = dbResults.map((r) => ({
+          mappedResults = dbResults.map((r) => ({
             runId: r.run_id || r.runId,
             name: r.name,
             type: r.type,
@@ -305,6 +290,43 @@ export default function App() {
           setResults(mappedResults);
         } else {
           setResults([]);
+        }
+
+        if (dbExps) {
+          const mappedExps = dbExps.map((e) => {
+            const latestResult = mappedResults.find((r) => r.name === e.name);
+            const currentStatus = latestResult ? latestResult.status : e.status;
+            const currentLastRun = latestResult ? latestResult.startedAt : (e.last_run || e.lastRun || 'Never');
+
+            const dbLastRun = e.last_run || e.lastRun;
+            if (e.status !== currentStatus || dbLastRun !== currentLastRun) {
+              const updatedExp = {
+                id: e.id,
+                name: e.name,
+                description: e.description,
+                type: e.type,
+                namespace: e.namespace,
+                target: e.target,
+                status: currentStatus,
+                lastRun: currentLastRun,
+              };
+              upsertExperiment(updatedExp, userId).catch(console.error);
+            }
+
+            return {
+              id: e.id,
+              name: e.name,
+              description: e.description,
+              type: e.type,
+              namespace: e.namespace,
+              target: e.target,
+              status: currentStatus,
+              lastRun: currentLastRun,
+            };
+          });
+          setExperiments(mappedExps);
+        } else {
+          setExperiments([]);
         }
 
         if (dbSettings) {
